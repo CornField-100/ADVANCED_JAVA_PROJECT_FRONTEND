@@ -1,8 +1,22 @@
+import { BrowserRouter as Router, Routes, Route, BrowserRouter } from "react-router-dom"
+//Pages
+import CreateProduct from './pages/CreateProduct'
+import HomePage from "./pages/HomePage"
+import LogInPage from "./pages/LogInPage"
+import NotFoundPage from "./pages/NotFoundPage"
+import SignUpPage from "./pages/SignUpPage"
+
 const App = () => {
   return (
-    <div className="container d-flex flex-column justify-content-center align-items-center vh-100 w-100">
-      <h1 className="text-center">App</h1>
-    </div>
+        <Router>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LogInPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/create-product" element={<CreateProduct />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Router>
   )
 }
 
