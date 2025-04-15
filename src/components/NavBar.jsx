@@ -15,9 +15,6 @@ const NavBar = () => {
                     <Link className="btn btn-success" to="/signup">
                         Sign-up
                     </Link>
-                    <Link className="btn btn-outline-dark me-2" to="/create-product">
-                        Sign-up
-                    </Link>
                 </div>
             </div>
        </nav>
