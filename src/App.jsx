@@ -16,6 +16,10 @@ const App = () => {
     <>
         <Router>
           <NavBar />
+          <main 
+            style={{ minHeight: "calc(100vh - 180px)" }}
+            className="container d-flex flex-column justify-content-center align-items-center"
+          >
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LogInPage />} />
@@ -23,6 +27,7 @@ const App = () => {
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+          </main>
           <FooterComp />
         </Router>
       </>

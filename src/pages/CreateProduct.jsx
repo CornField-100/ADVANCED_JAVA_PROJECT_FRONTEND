@@ -1,6 +1,6 @@
 const CreateProduct = () => {
     return (
-      <div className="container d-flex flex-column justify-content-center align-items-center vh-100 w-100">
+      <div>
         <h1 className="text-center">Create a product</h1>
       </div>
     )
