@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { fetchProducts } from "../utils/fetchProduts"
+import CardComponent from "../components/CardComponent"
 
 const HomePage = () => {
   const [products, setProducts] = useState([])
@@ -31,9 +32,7 @@ const HomePage = () => {
   return (
     <ul>
       {products.map((product) => (
-        <li key={product._id}>
-          {product.brand} - {product.Model}
-        </li>
+        <CardComponent />
       ))}
     </ul>
   )
