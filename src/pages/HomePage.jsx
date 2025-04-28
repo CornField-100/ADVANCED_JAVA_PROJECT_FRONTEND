@@ -13,7 +13,6 @@ const HomePage = () => {
         setLoading(true)
         setError(null)
         const data = await fetchProducts()
-        console.log("Fetched data:", data)
         setProducts(data)
       } catch (err) {
         console.error("Error loading products:", err)
@@ -30,11 +29,17 @@ const HomePage = () => {
   if (!products.length) return <p>No products found</p>
 
   return (
-    <ul>
-      {products.map((product) => (
-        <CardComponent />
-      ))}
-    </ul>
+    <section className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3"> 
+        {products.map((product) => (
+          <CardComponent 
+          key={product._id}
+          title={product.Model}
+          brand={product.brand}
+          price={product.price}
+          stock={product.stock}
+          imageUrl={product.imageUrl} />
+        ))}
+    </section>
   )
 }
 
