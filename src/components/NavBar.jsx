@@ -1,24 +1,54 @@
-import React from 'react'
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
-    return (
-        <nav className="navbar navbar-expand-lg bg-primary navbar-dark">
-            <div className="container-fluid">
-                <Link className="navbar-brand" to="/">
-                  E-commerce
-                </Link>
-                <div className="col-md-3 text-end">
-                    <Link className="btn btn-outline-dark me-2" to="/login">
-                        Login
-                    </Link>
-                    <Link className="btn btn-success" to="/signup">
-                        Sign-up
-                    </Link>
-                </div>
-            </div>
-       </nav>
-    )
-}
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
-export default NavBar
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  return (
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <div className="container-fluid">
+        <a className="navbar-brand" href="/">ProductApp</a>
+
+        <div className="d-flex">
+          {token ? (
+            <>
+              <button
+                className="btn btn-success me-2"
+                onClick={() => navigate("/create-product")}
+              >
+                Create Product
+              </button>
+
+              <button className="btn btn-outline-danger" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="btn btn-primary me-2"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </button>
+
+              <button
+                className="btn btn-secondary"
+                onClick={() => navigate("/signup")}
+              >
+                Signup
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default NavBar;
