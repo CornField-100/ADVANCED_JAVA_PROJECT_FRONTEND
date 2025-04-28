@@ -3,8 +3,10 @@ import InputForm from "../components/InputFormComp";
 import { useState } from "react";
 import { checkEmail } from "../utils/checkFormErrors";
 import AlertComp from "../components/AlertComp";
+import { useNavigate } from "react-router-dom";
 
 const LogInPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -34,13 +36,17 @@ const LogInPage = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-      if (response.status === 401) {
-        throw Error("Invalid credentials, please check")
-      }
-      const token = await response.json()
-      localStorage.setItem("token", token)
 
-      console.log("Login successful:");
+      if (response.status === 401) {
+        throw Error("Invalid credentials, please check");
+      }
+
+      const token = await response.json();
+      localStorage.setItem("token", token);
+
+      console.log("Login successful");
+
+      navigate("/"); // ✅ Redirect to Home page after login success
     } catch (error) {
       console.error(error.message);
       setError(error.message);
