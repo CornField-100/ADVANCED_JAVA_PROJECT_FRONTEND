@@ -40,7 +40,7 @@ const CreateProduct = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
 
-      const response = await fetch("http://localhost:3001/api/product/addProduct", {
+      const response = await fetch("https://advanced-java-project.onrender.com/api/product/addProduct", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

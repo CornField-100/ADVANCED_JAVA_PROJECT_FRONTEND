@@ -1,4 +1,4 @@
-const uri = "http://localhost:3001/api/product/getAllProduct"
+const uri = "https://advanced-java-project.onrender.com/api/product/getAllProduct"
 
 export const fetchProducts = async () => {
     try {
