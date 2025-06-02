@@ -7,6 +7,7 @@ import LogInPage from "./pages/LogInPage"
 import NotFoundPage from "./pages/NotFoundPage"
 import SignUpPage from "./pages/SignUpPage"
 import EditProductPage from "./pages/EditProduct"
+import SearchProductPage from "./pages/SearchProductPage"
 
 //Components
 import NavBar from "./components/NavBar"
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/edit-product/:id" element={<EditProductPage />} />
             <Route path="*" element={<NotFoundPage />} />
+            <Route path="/search" element={<SearchProductPage />} />
           </Routes>
           </main>
           <FooterComp />
