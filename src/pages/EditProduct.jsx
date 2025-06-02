@@ -19,7 +19,7 @@ const EditProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`https://advanced-java-project.onrender.com/product/${id}`, {
+        const response = await fetch(`https://advanced-java-project.onrender.com/api/product/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
