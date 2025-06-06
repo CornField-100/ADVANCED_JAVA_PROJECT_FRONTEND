@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 
 const SearchProductPage = () => {
   const [queryParams] = useSearchParams();
@@ -42,20 +42,26 @@ const SearchProductPage = () => {
 
       <div className="row">
         {results.length === 0 && !error && <p>No products found.</p>}
+
         {results.map((product) => (
           <div className="col-md-4 mb-3" key={product._id}>
-            <div className="card p-3">
-              <h5>
-                {product.brand} - {product.model}
-              </h5>
-              <p>Price: ${product.price}</p>
-              <p>Stock: {product.stock}</p>
-            </div>
+            {/* Wrap with Link to a product detail page, assuming /product/:id route */}
+            <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="card p-3" style={{ cursor: "pointer" }}>
+                <h5>
+                  {product.brand} - {product.Model}
+                </h5>
+                <p>Price: ${product.price}</p>
+                <p>Stock: {product.stock}</p>
+              </div>
+            </Link>
           </div>
         ))}
       </div>
     </div>
   );
 };
+
+
 
 export default SearchProductPage;
