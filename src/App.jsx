@@ -8,6 +8,8 @@ import NotFoundPage from "./pages/NotFoundPage"
 import SignUpPage from "./pages/SignUpPage"
 import EditProductPage from "./pages/EditProduct"
 import SearchProductPage from "./pages/SearchProductPage"
+import CartPage from "./pages/CartPage";
+
 
 //Components
 import NavBar from "./components/NavBar"
@@ -30,6 +32,7 @@ const App = () => {
             <Route path="/edit-product/:id" element={<EditProductPage />} />
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/search" element={<SearchProductPage />} />
+            <Route path="/cart" element={<CartPage />} />
           </Routes>
           </main>
           <FooterComp />

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-const NavBar = () => {
+const NavBar = ({ cartItems = [] }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,6 +46,11 @@ const NavBar = () => {
             Search
           </button>
         </form>
+
+        {/* Cart Button */}
+        <Link to="/cart" className="btn btn-outline-primary me-2">
+          🛒 Cart ({cartItems.length})
+        </Link>
 
         {/* Login/Create/Logout Buttons */}
         <div className="d-flex">
