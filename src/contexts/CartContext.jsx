@@ -3,36 +3,45 @@ import { createContext, useContext, useState } from "react";
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cart, setCart] = useState([]);
 
   const addToCart = (product) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find(
-        (item) => item.productId === product.productId
-      );
-      if (existingItem) {
-        return prevItems.map((item) =>
+    setCart((prevCart) => {
+      const existing = prevCart.find((item) => item.productId === product.productId);
+      if (existing) {
+        return prevCart.map((item) =>
           item.productId === product.productId
-            ? { ...item, quantity: item.quantity + product.quantity }
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         );
-      } else {
-        return [...prevItems, product];
       }
+      return [...prevCart, { ...product, quantity: 1 }];
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.productId !== productId)
-    );
+  const updateQuantity = (productId, newQty) => {
+    if (newQty <= 0) {
+      removeFromCart(productId);
+    } else {
+      setCart((prevCart) =>
+        prevCart.map((item) =>
+          item.productId === productId ? { ...item, quantity: newQty } : item
+        )
+      );
+    }
   };
 
-  const clearCart = () => setCartItems([]);
+  const removeFromCart = (productId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.productId !== productId));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, clearCart }}
+      value={{ cart, addToCart, updateQuantity, removeFromCart, clearCart }}
     >
       {children}
     </CartContext.Provider>

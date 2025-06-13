@@ -1,51 +1,101 @@
 import { useCart } from "../contexts/CartContext";
+import { Link } from "react-router-dom";
 
 const CartPage = () => {
-  const { cartItems, removeFromCart, clearCart } = useCart();
+  const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
 
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
-  return (
-    <div className="container mt-5">
-      <h2>Your Cart</h2>
-      {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <>
-          <ul className="list-group mb-3">
-            {cartItems.map((item) => (
-              <li
-                className="list-group-item d-flex justify-content-between align-items-center"
-                key={item._id}
-              >
-                <div>
-                  <h5>{item.Model}</h5>
-                  <p className="mb-1">Brand: {item.brand}</p>
-                  <p className="mb-1">Price: ${item.price}</p>
-                  <p className="mb-1">Quantity: {item.quantity}</p>
-                </div>
-                <button
-                  className="btn btn-sm btn-danger"
-                  onClick={() => removeFromCart(item._id)}
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
+  if (cart.length === 0) {
+    return (
+      <div className="text-center mt-5">
+        <h2 className="display-5">🛒 Your Cart is Empty</h2>
+        <p className="lead">Looks like you haven't added anything yet.</p>
+        <Link to="/" className="btn btn-primary mt-3">
+          Browse Products
+        </Link>
+      </div>
+    );
+  }
 
-          <h4>Total: ${total.toFixed(2)}</h4>
-          <div className="d-flex gap-2 mt-3">
-            <button className="btn btn-secondary" onClick={clearCart}>
-              Clear Cart
+  return (
+    <div className="container my-5">
+      <h2 className="text-center mb-4">🛍️ Your Shopping Cart</h2>
+      <div className="row">
+        <div className="col-lg-8">
+          {cart.map((item) => (
+            <div className="card mb-3 shadow-sm" key={item.productId}>
+              <div className="row g-0">
+                <div className="col-md-4">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="img-fluid rounded-start"
+                    style={{ height: "200px", objectFit: "contain" }}
+                  />
+                </div>
+                <div className="col-md-8">
+                  <div className="card-body">
+                    <h5 className="card-title">{item.title}</h5>
+                    <p className="card-text">
+                      <strong>Brand:</strong> {item.brand}
+                      <br />
+                      <strong>Price:</strong> ${item.price.toFixed(2)}
+                    </p>
+                    <div className="d-flex align-items-center gap-3 mt-3">
+                      <label className="form-label mb-0">Quantity:</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        style={{ width: "80px" }}
+                        value={item.quantity}
+                        min="1"
+                        onChange={(e) =>
+                          updateQuantity(
+                            item.productId,
+                            parseInt(e.target.value)
+                          )
+                        }
+                      />
+                      <button
+                        onClick={() => removeFromCart(item.productId)}
+                        className="btn btn-outline-danger btn-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="col-lg-4">
+          <div className="card shadow-sm p-4">
+            <h4>Order Summary</h4>
+            <hr />
+            <p>
+              <strong>Items:</strong> {cart.length}
+            </p>
+            <p>
+              <strong>Total:</strong> ${totalPrice.toFixed(2)}
+            </p>
+            <button className="btn btn-success w-100 mb-2">
+              🧾 Place Order
             </button>
-            <button className="btn btn-success">Proceed to Checkout</button>
+            <button
+              className="btn btn-outline-secondary w-100"
+              onClick={clearCart}
+            >
+              ❌ Clear Cart
+            </button>
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };
