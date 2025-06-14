@@ -3,7 +3,7 @@ import { useCart } from "../contexts/CartContext";
 import productImgPlaceholder from "../assets/image.png";
 
 const CardComponent = ({ productId, title, brand, stock, price, imageUrl }) => {
-  const { addToCart } = useCart(); // ✅ extract addToCart from context
+  const { addToCart } = useCart();
 
   const handleAddToCart = () => {
     addToCart({ productId, title, brand, price, imageUrl, quantity: 1 });
@@ -31,7 +31,7 @@ const CardComponent = ({ productId, title, brand, stock, price, imageUrl }) => {
           <div className="d-flex justify-content-between align-items-center mt-3">
             <Link
               to={`/products/${productId}`}
-              className="btn btn-sm btn-outline-primary"
+              className="btn btn-outline-primary btn-sm me-2"
             >
               View
             </Link>
