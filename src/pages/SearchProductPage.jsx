@@ -30,29 +30,42 @@ const SearchProductPage = () => {
     if (query.trim()) {
       search();
     } else {
-      setResults([]); // Clear results if query is empty
+      setResults([]);
     }
   }, [query]);
 
   return (
     <div className="container mt-5">
-      <h3>Search results for: "{query}"</h3>
+      <h3>
+        Search results for: "<span className="text-primary">{query}</span>"
+      </h3>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row">
-        {results.length === 0 && !error && <p>No products found.</p>}
+        {results.length === 0 && !error && (
+          <p className="mt-3 text-muted">No products found.</p>
+        )}
 
         {results.map((product) => (
           <div className="col-md-4 mb-3" key={product._id}>
-            {/* Wrap with Link to a product detail page, assuming /product/:id route */}
-            <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className="card p-3" style={{ cursor: "pointer" }}>
-                <h5>
+            <Link
+              to={`/products/${product._id}`} // ✅ correct route!
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <div
+                className="card p-3 shadow-sm border-0 h-100"
+                style={{ cursor: "pointer" }}
+              >
+                <h5 className="text-capitalize">
                   {product.brand} - {product.Model}
                 </h5>
-                <p>Price: ${product.price}</p>
-                <p>Stock: {product.stock}</p>
+                <p className="mb-1">
+                  <strong>Price:</strong> ${product.price}
+                </p>
+                <p className="mb-0">
+                  <strong>Stock:</strong> {product.stock}
+                </p>
               </div>
             </Link>
           </div>
@@ -61,7 +74,5 @@ const SearchProductPage = () => {
     </div>
   );
 };
-
-
 
 export default SearchProductPage;
