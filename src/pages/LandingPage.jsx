@@ -21,7 +21,7 @@ const LandingPage = () => {
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{ objectFit: "cover", zIndex: 0 }}
         >
-          <source src="src/assets/ink.mp4" type="video/mp4" />
+          <source src="/ink.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 
@@ -83,8 +83,7 @@ const LandingPage = () => {
             <div className="col-md-4 mb-4">
               <FaLaptop size={40} className="mb-3 text-primary" />
               <h5 className="fw-bold">
-                Modern Tech{" "}
-                <span className="badge bg-success ms-2">New</span>
+                Modern Tech <span className="badge bg-success ms-2">New</span>
               </h5>
               <p className="text-muted">
                 Latest gadgets and devices curated for innovators.
