@@ -8,18 +8,43 @@ const LandingPage = () => {
   const handleToast = () => toast("🚀 Welcome to Lync!");
 
   return (
-    <div className="bg-light text-dark">
+    <div className="text-dark">
       <ToastContainer />
-      {/* Hero Section */}
-      <section className="vh-100 d-flex align-items-center animate__animated animate__fadeIn">
-        <div className="container text-center">
-          <h1 className="display-3 fw-bold mb-4">Welcome to Lync</h1>
-          <p className="lead mb-4">
+
+      {/* HERO SECTION */}
+      <section className="position-relative vh-100 w-100 overflow-hidden text-white">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="position-absolute top-0 start-0 w-100 h-100"
+          style={{ objectFit: "cover", zIndex: 0 }}
+        >
+          <source src="src/assets/ink.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {/* Overlay */}
+        <div
+          className="position-absolute top-0 start-0 w-100 h-100"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1 }}
+        ></div>
+
+        {/* Foreground content */}
+        <div
+          className="container d-flex flex-column align-items-center justify-content-center h-100 text-center position-relative"
+          style={{ zIndex: 2 }}
+        >
+          <h1 className="display-2 fw-bold mb-3 animate__animated animate__fadeInDown">
+            Welcome to Lync
+          </h1>
+          <p className="lead mb-4 animate__animated animate__fadeInUp">
             Discover, compare, and buy the best tech curated just for you.
           </p>
           <Link
             to="/products"
-            className="btn btn-primary btn-lg px-5"
+            className="btn btn-primary btn-lg px-5 animate__animated animate__fadeIn"
             onClick={handleToast}
           >
             Start Shopping
@@ -27,20 +52,23 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Glowing 3D Decorative Section */}
+      {/* SPLINE SECTION */}
       <section className="bg-white py-5">
         <div className="container text-center">
-          <h2 className="fw-bold mb-3">A Store That Glows</h2>
-          <p className="text-muted mb-4">
+          <h2 className="fw-bold mb-3 animate__animated animate__fadeInUp">
+            A Store That Glows
+          </h2>
+          <p className="text-muted mb-4 animate__animated animate__fadeInUp animate__delay-1s">
             A touch of interactivity and elegance for your digital journey.
           </p>
           <div
-            className="rounded overflow-hidden shadow-sm"
+            className="rounded shadow-sm animate__animated animate__fadeIn"
             style={{
-              maxWidth: "700px",
+              maxWidth: "800px",
               margin: "0 auto",
               borderRadius: "20px",
               pointerEvents: "none",
+              overflow: "hidden",
             }}
           >
             <Spline scene="https://prod.spline.design/RyLQNywPgtv3LXnu/scene.splinecode" />
@@ -48,27 +76,28 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-5 bg-white animate__animated animate__fadeInUp">
+      {/* FEATURES SECTION */}
+      <section className="py-5 bg-light">
         <div className="container">
           <div className="row text-center">
-            <div className="col-md-4">
+            <div className="col-md-4 mb-4">
               <FaLaptop size={40} className="mb-3 text-primary" />
               <h5 className="fw-bold">
-                Modern Tech <span className="badge bg-success ms-2">New</span>
+                Modern Tech{" "}
+                <span className="badge bg-success ms-2">New</span>
               </h5>
               <p className="text-muted">
                 Latest gadgets and devices curated for innovators.
               </p>
             </div>
-            <div className="col-md-4">
+            <div className="col-md-4 mb-4">
               <FaLock size={40} className="mb-3 text-primary" />
               <h5 className="fw-bold">Secure Payments</h5>
               <p className="text-muted">
                 Encrypted and reliable checkout for your peace of mind.
               </p>
             </div>
-            <div className="col-md-4">
+            <div className="col-md-4 mb-4">
               <FaTruck size={40} className="mb-3 text-primary" />
               <h5 className="fw-bold">
                 Fast Delivery{" "}

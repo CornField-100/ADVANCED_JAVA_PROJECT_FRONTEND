@@ -19,11 +19,19 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
+    <nav
+      className="navbar navbar-expand-lg navbar-dark px-4 shadow-sm position-fixed top-0 w-100"
+      style={{
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        backdropFilter: "blur(8px)",
+        zIndex: 999,
+      }}
+    >
       <div className="container-fluid">
-        <Link className="navbar-brand fw-bold fs-3" to="/">
+        <Link className="navbar-brand fw-bold fs-4" to="/">
           Lync
         </Link>
+
         <button
           className="navbar-toggler"
           type="button"
@@ -32,57 +40,77 @@ const NavBar = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
+
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link" to="/">
+              <Link className="nav-link px-3 rounded-pill" to="/">
                 Home
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/products">
+              <Link className="nav-link px-3 rounded-pill" to="/products">
                 Products
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/cart">
+              <Link className="nav-link px-3 rounded-pill" to="/cart">
                 Cart
               </Link>
             </li>
             {token && (
               <li className="nav-item">
-                <Link className="nav-link" to="/create-product">
+                <Link
+                  className="nav-link px-3 rounded-pill"
+                  to="/create-product"
+                >
                   Add Product
                 </Link>
               </li>
             )}
           </ul>
+
           <form className="d-flex me-3" onSubmit={handleSearch}>
             <input
               type="search"
               className="form-control form-control-sm rounded-pill me-2"
-              placeholder="Search products..."
+              placeholder="Search..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
+              style={{
+                backgroundColor: "#f8f9fa",
+                color: "#000",
+                border: "none",
+              }}
             />
             <button
               className="btn btn-outline-light btn-sm rounded-pill"
               type="submit"
             >
-              Search
+              Go
             </button>
           </form>
+
           {!token ? (
             <>
-              <Link className="btn btn-outline-light btn-sm me-2" to="/login">
+              <Link
+                className="btn btn-outline-light btn-sm me-2 rounded-pill"
+                to="/login"
+              >
                 Login
               </Link>
-              <Link className="btn btn-outline-light btn-sm" to="/signup">
+              <Link
+                className="btn btn-outline-light btn-sm rounded-pill"
+                to="/signup"
+              >
                 Sign Up
               </Link>
             </>
           ) : (
-            <button className="btn btn-warning btn-sm" onClick={handleLogout}>
+            <button
+              className="btn btn-warning btn-sm rounded-pill"
+              onClick={handleLogout}
+            >
               Logout
             </button>
           )}
