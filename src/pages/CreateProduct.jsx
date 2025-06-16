@@ -13,12 +13,13 @@ const CreateProduct = () => {
     price: "",
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // Redirect to login if not authenticated
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login"); // Redirect if no token
-    }
+    if (!token) navigate("/login");
   }, [navigate]);
 
   const handleChange = (field) => (value) =>
@@ -33,15 +34,16 @@ const CreateProduct = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
-      setError(null);
-
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
 
       const response = await fetch(
-        "https://advanced-java-project.onrender.com/api/product/addProduct",
+        "http://localhost:3001/api/product/addProduct",
         {
           method: "POST",
           headers: {
@@ -64,12 +66,19 @@ const CreateProduct = () => {
         throw new Error(serverData.message || "Product creation failed");
       }
 
-      console.log("Product created successfully:", serverData);
-      // Optionally clear form
+      setSuccess("✅ Product created successfully!");
       setFormData({ brand: "", Model: "", stock: "", price: "" });
+
+      // Delay for visual feedback then redirect
+      setTimeout(() => {
+        navigate("/", { replace: true });
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error(error.message);
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,7 +88,7 @@ const CreateProduct = () => {
       style={{ maxWidth: "480px", margin: "auto" }}
       onSubmit={handleSubmit}
     >
-      <h1 className="text-center">Create Product</h1>
+      <h1 className="text-center mb-4">Add a New Product</h1>
 
       {fieldConfig.map(({ name, label, type, id }) => (
         <div className="mb-3" key={name}>
@@ -90,17 +99,21 @@ const CreateProduct = () => {
             value={formData[name]}
             onchange={handleChange(name)}
             aria-describedby={`${id}Help`}
+            disabled={loading}
           />
         </div>
       ))}
 
       {error && <AlertComp alertType="alert-danger" text={error} />}
+      {success && <AlertComp alertType="alert-success" text={success} />}
 
-      <div>
-        <button type="submit" className="btn btn-primary w-100">
-          Add Product
-        </button>
-      </div>
+      <button
+        type="submit"
+        className="btn btn-primary w-100"
+        disabled={loading}
+      >
+        {loading ? "Submitting..." : "Add Product"}
+      </button>
     </form>
   );
 };
