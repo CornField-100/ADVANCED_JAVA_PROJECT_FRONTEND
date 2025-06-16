@@ -1,18 +1,27 @@
 import { Link } from "react-router-dom";
 import Spline from "@splinetool/react-spline";
 import { FaLaptop, FaLock, FaTruck } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LandingPage = () => {
+  const handleToast = () => toast("🚀 Welcome to PeakShop!");
+
   return (
     <div className="bg-light text-dark">
+      <ToastContainer />
       {/* Hero Section */}
       <section className="vh-100 d-flex align-items-center animate__animated animate__fadeIn">
         <div className="container text-center">
           <h1 className="display-3 fw-bold mb-4">Welcome to PeakShop</h1>
           <p className="lead mb-4">
-            Discover, compare, and buy the best tech curated just for you.
+            Discover, compare, and buy the best tech — curated just for you.
           </p>
-          <Link to="/products" className="btn btn-primary btn-lg px-5">
+          <Link
+            to="/products"
+            className="btn btn-primary btn-lg px-5"
+            onClick={handleToast}
+          >
             Start Shopping
           </Link>
         </div>
@@ -45,7 +54,9 @@ const LandingPage = () => {
           <div className="row text-center">
             <div className="col-md-4">
               <FaLaptop size={40} className="mb-3 text-primary" />
-              <h5 className="fw-bold">Modern Tech</h5>
+              <h5 className="fw-bold">
+                Modern Tech <span className="badge bg-success ms-2">New</span>
+              </h5>
               <p className="text-muted">
                 Latest gadgets and devices curated for innovators.
               </p>
@@ -59,7 +70,10 @@ const LandingPage = () => {
             </div>
             <div className="col-md-4">
               <FaTruck size={40} className="mb-3 text-primary" />
-              <h5 className="fw-bold">Fast Delivery</h5>
+              <h5 className="fw-bold">
+                Fast Delivery{" "}
+                <span className="badge bg-info ms-2">Express</span>
+              </h5>
               <p className="text-muted">
                 Speedy and trackable deliveries right to your doorstep.
               </p>

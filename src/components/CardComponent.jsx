@@ -6,11 +6,14 @@ const CardComponent = ({ productId, title, brand, stock, price, imageUrl }) => {
   const { addToCart } = useCart();
 
   const handleAddToCart = (e) => {
-    e.stopPropagation(); // prevent card click
-    e.preventDefault(); // prevent navigation
+    e.stopPropagation();
+    e.preventDefault();
     addToCart({ productId, title, brand, price, imageUrl, quantity: 1 });
     alert(`${title} added to basket!`);
   };
+
+  const imageSrc =
+    imageUrl && imageUrl.trim() !== "" ? imageUrl : productImgPlaceholder;
 
   return (
     <article className="col">
@@ -18,30 +21,38 @@ const CardComponent = ({ productId, title, brand, stock, price, imageUrl }) => {
         to={`/products/${productId}`}
         className="text-decoration-none text-dark"
       >
-        <div className="card shadow-sm h-100">
+        <div className="card shadow-sm h-100 border-0 rounded-4 hover-shadow">
           <img
-            src={imageUrl || productImgPlaceholder}
-            className="card-img-top"
+            src={imageSrc}
+            className="card-img-top rounded-top"
             alt={`${title} image`}
-            style={{ minHeight: "300px", objectFit: "contain" }}
+            style={{ height: "250px", objectFit: "cover" }}
           />
-          <div className="card-body">
-            <h5 className="card-title">{title}</h5>
-            <p className="card-text mb-1">
-              <strong>Brand:</strong> {brand}
-            </p>
-            <p className="card-text mb-1">
-              <strong>Stock:</strong> {stock}
-            </p>
-            <p className="card-text">
-              <strong>Price:</strong> ${price}
-            </p>
-            <div className="d-flex justify-content-end mt-3">
+          <div className="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 className="card-title fw-semibold text-primary mb-2">
+                {title.length > 25 ? `${title.slice(0, 25)}...` : title}
+              </h5>
+              <p className="card-text mb-1">
+                <span className="text-muted">Brand:</span>{" "}
+                <strong>{brand}</strong>
+              </p>
+              <p className="card-text mb-1">
+                <span className="text-muted">Stock:</span>{" "}
+                {stock > 0 ? (
+                  <span className="text-success fw-semibold">In Stock</span>
+                ) : (
+                  <span className="text-danger">Out of Stock</span>
+                )}
+              </p>
+              <p className="card-text fs-5 fw-bold text-dark">${price}</p>
+            </div>
+            <div className="d-grid mt-3">
               <button
                 onClick={handleAddToCart}
-                className="btn btn-sm btn-success"
+                className="btn btn-outline-success rounded-pill fw-semibold"
               >
-                Add to Basket
+                🛒 Add to Basket
               </button>
             </div>
           </div>
