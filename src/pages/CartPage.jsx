@@ -1,5 +1,6 @@
 import { useCart } from "../contexts/CartContext";
 import { Link } from "react-router-dom";
+import productImgPlaceholder from "../assets/image.png";
 
 const CartPage = () => {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
@@ -31,8 +32,12 @@ const CartPage = () => {
               <div className="row g-0">
                 <div className="col-md-4">
                   <img
-                    src={item.imageUrl}
-                    alt={item.title}
+                    src={
+                      item.imageUrl && item.imageUrl.trim() !== ""
+                        ? item.imageUrl
+                        : productImgPlaceholder
+                    }
+                    alt={item.title || "Product"}
                     className="img-fluid rounded-start"
                     style={{ height: "200px", objectFit: "contain" }}
                   />

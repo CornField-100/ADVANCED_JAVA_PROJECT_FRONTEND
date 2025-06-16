@@ -22,7 +22,7 @@ const NavBar = () => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-black shadow-sm px-4">
       <div className="container-fluid">
         <Link className="navbar-brand fw-bold fs-3" to="/">
-          PeakShop
+          Lync
         </Link>
         <button
           className="navbar-toggler"

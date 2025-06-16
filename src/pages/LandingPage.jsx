@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const LandingPage = () => {
-  const handleToast = () => toast("🚀 Welcome to PeakShop!");
+  const handleToast = () => toast("🚀 Welcome to Lync!");
 
   return (
     <div className="bg-light text-dark">
@@ -13,9 +13,9 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="vh-100 d-flex align-items-center animate__animated animate__fadeIn">
         <div className="container text-center">
-          <h1 className="display-3 fw-bold mb-4">Welcome to PeakShop</h1>
+          <h1 className="display-3 fw-bold mb-4">Welcome to Lync</h1>
           <p className="lead mb-4">
-            Discover, compare, and buy the best tech — curated just for you.
+            Discover, compare, and buy the best tech curated just for you.
           </p>
           <Link
             to="/products"
