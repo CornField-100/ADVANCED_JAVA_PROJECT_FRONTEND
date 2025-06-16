@@ -40,20 +40,23 @@ const CreateProduct = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
 
-      const response = await fetch("https://advanced-java-project.onrender.com/api/product/addProduct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          brand: formData.brand,
-          Model: formData.Model,
-          stock: Number(formData.stock),
-          price: Number(formData.price),
-        }),
-      });
+      const response = await fetch(
+        "https://advanced-java-project.onrender.com/api/product/addProduct",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            brand: formData.brand,
+            Model: formData.Model,
+            stock: Number(formData.stock),
+            price: Number(formData.price),
+          }),
+        }
+      );
 
       const serverData = await response.json();
 
@@ -64,7 +67,6 @@ const CreateProduct = () => {
       console.log("Product created successfully:", serverData);
       // Optionally clear form
       setFormData({ brand: "", Model: "", stock: "", price: "" });
-
     } catch (error) {
       console.error(error.message);
       setError(error.message);
