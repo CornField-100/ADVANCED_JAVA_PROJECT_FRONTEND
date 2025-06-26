@@ -19,7 +19,7 @@ const HomePage = () => {
         setProducts(data);
       } catch (err) {
         console.error("Error loading products:", err);
-        setError("Failed to load products");
+        setError("Failed to load products. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -35,13 +35,37 @@ const HomePage = () => {
     }
   };
 
+  const handleViewDetails = (productId) => {
+    navigate(`/products/${productId}`);
+  };
+
   return (
-    <div className="container my-5">
-      <h2 className="mb-4 fw-bold text-center">Latest Products</h2>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
-      {!loading && !error && products.length === 0 && <p>No products found</p>}
-      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+    <div className="container my-5 pt-5">
+      <h2 className="mb-4 fw-bold text-center">Featured Products</h2>
+
+      {loading && (
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="alert alert-danger text-center">
+          <p className="mb-0">{error}</p>
+        </div>
+      )}
+
+      {!loading && !error && products.length === 0 && (
+        <div className="alert alert-info text-center">
+          <p className="mb-0">
+            No products found at the moment. Please check back later.
+          </p>
+        </div>
+      )}
+
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         {products.map((product) => (
           <div key={product._id} className="col">
             <CardComponent
@@ -51,15 +75,10 @@ const HomePage = () => {
               stock={product.stock ?? 0}
               imageUrl={product.imageUrl || ""}
               productId={product._id}
+              onViewDetails={() => handleViewDetails(product._id)}
+              onEdit={() => handleEdit(product._id)}
+              showEditButton={!!token} // Show edit button only if logged in
             />
-            {token && (
-              <button
-                className="btn btn-outline-warning w-100 mt-2"
-                onClick={() => handleEdit(product._id)}
-              >
-                Edit Product
-              </button>
-            )}
           </div>
         ))}
       </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import LabelComp from "../components/LabelComp";
 import InputForm from "../components/InputFormComp";
 import AlertComp from "../components/AlertComp"; // For error display
+import { BASE_URL } from "../utils/api";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -39,17 +40,14 @@ const SignUpPage = () => {
     setSuccess(false);
 
     try {
-      const response = await fetch(
-        "https://advanced-java-project.onrender.com/api/users/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/api/users/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
       const serverData = await response.json();
 

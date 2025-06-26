@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import LabelComp from "../components/LabelComp";
 import InputForm from "../components/InputFormComp";
 import AlertComp from "../components/AlertComp";
+import { BASE_URL } from "../utils/api";
 
 const EditProductPage = () => {
   const { id } = useParams();
@@ -19,14 +20,11 @@ const EditProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(
-          `https://advanced-java-project.onrender.com/api/product/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${BASE_URL}/api/product/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch product");
@@ -56,17 +54,14 @@ const EditProductPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `https://advanced-java-project.onrender.com/api/product/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/api/product/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to update product");

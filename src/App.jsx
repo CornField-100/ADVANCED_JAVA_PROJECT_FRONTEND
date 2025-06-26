@@ -19,10 +19,7 @@ const App = () => {
   return (
     <Router>
       <NavBar />
-      <main
-        style={{ minHeight: "calc(100vh - 180px)" }}
-        className="container d-flex flex-column justify-content-center align-items-center"
-      >
+      <main style={{ paddingTop: "5rem" }} className="container">
         <Routes>
           <Route path="/" element={<LandingPage />} /> {/* ✅ updated */}
           <Route path="/products" element={<HomePage />} />{" "}

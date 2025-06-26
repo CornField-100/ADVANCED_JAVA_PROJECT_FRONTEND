@@ -1,111 +1,74 @@
-import { Link } from "react-router-dom";
-import Spline from "@splinetool/react-spline";
-import { FaLaptop, FaLock, FaTruck } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchProducts } from "../utils/fetchProduts";
+import CardComponent from "../components/CardComponent";
+import Hero from "../components/Hero"; // Import the Hero component
 
 const LandingPage = () => {
-  const handleToast = () => toast("🚀 Welcome to Lync!");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchProducts();
+        setProducts(data.slice(0, 4)); // Show 4 featured products
+      } catch (err) {
+        console.error("Error loading featured products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProducts();
+  }, []);
+
+  const handleEdit = (productId) => {
+    navigate(`/edit-product/${productId}`);
+  };
+
+  const handleViewDetails = (productId) => {
+    navigate(`/products/${productId}`);
+  };
 
   return (
-    <div className="text-dark">
-      <ToastContainer />
-
-      {/* HERO SECTION */}
-      <section className="position-relative vh-100 w-100 overflow-hidden text-white">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="position-absolute top-0 start-0 w-100 h-100"
-          style={{ objectFit: "cover", zIndex: 0 }}
-        >
-          <source src="/ink.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-
-        {/* Overlay */}
-        <div
-          className="position-absolute top-0 start-0 w-100 h-100"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1 }}
-        ></div>
-
-        {/* Foreground content */}
-        <div
-          className="container d-flex flex-column align-items-center justify-content-center h-100 text-center position-relative"
-          style={{ zIndex: 2 }}
-        >
-          <h1 className="display-2 fw-bold mb-3 animate__animated animate__fadeInDown">
-            Welcome to Lync
-          </h1>
-          <p className="lead mb-4 animate__animated animate__fadeInUp">
-            Discover, compare, and buy the best tech curated just for you.
-          </p>
-          <Link
-            to="/products"
-            className="btn btn-primary btn-lg px-5 animate__animated animate__fadeIn"
-            onClick={handleToast}
-          >
-            Start Shopping
-          </Link>
-        </div>
-      </section>
-
-      {/* SPLINE SECTION */}
-      <section className="bg-white py-5">
-        <div className="container text-center">
-          <h2 className="fw-bold mb-3 animate__animated animate__fadeInUp">
-            A Store That Glows
-          </h2>
-          <p className="text-muted mb-4 animate__animated animate__fadeInUp animate__delay-1s">
-            A touch of interactivity and elegance for your digital journey.
-          </p>
-          <div
-            className="rounded shadow-sm animate__animated animate__fadeIn"
-            style={{
-              maxWidth: "800px",
-              margin: "0 auto",
-              borderRadius: "20px",
-              pointerEvents: "none",
-              overflow: "hidden",
-            }}
-          >
-            <Spline scene="https://prod.spline.design/RyLQNywPgtv3LXnu/scene.splinecode" />
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES SECTION */}
-      <section className="py-5 bg-light">
+    <div className="landing-page">
+      <Hero /> {/* Use the Hero component */}
+      {/* FEATURED PRODUCTS SECTION */}
+      <section className="py-5">
         <div className="container">
-          <div className="row text-center">
-            <div className="col-md-4 mb-4">
-              <FaLaptop size={40} className="mb-3 text-primary" />
-              <h5 className="fw-bold">
-                Modern Tech <span className="badge bg-success ms-2">New</span>
-              </h5>
-              <p className="text-muted">
-                Latest gadgets and devices curated for innovators.
-              </p>
+          <h2 className="text-center fw-bold mb-5">Featured Products</h2>
+          {loading ? (
+            <div className="text-center">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
             </div>
-            <div className="col-md-4 mb-4">
-              <FaLock size={40} className="mb-3 text-primary" />
-              <h5 className="fw-bold">Secure Payments</h5>
-              <p className="text-muted">
-                Encrypted and reliable checkout for your peace of mind.
-              </p>
+          ) : (
+            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+              {products.map((product) => (
+                <div key={product._id} className="col">
+                  <CardComponent
+                    title={product.Model || product.model || "No Model"}
+                    brand={product.brand || "Unknown Brand"}
+                    price={product.price ?? "N/A"}
+                    stock={product.stock ?? 0}
+                    imageUrl={product.imageUrl || ""}
+                    productId={product._id}
+                    onViewDetails={() => handleViewDetails(product._id)}
+                    onEdit={() => handleEdit(product._id)}
+                    showEditButton={!!token}
+                  />
+                </div>
+              ))}
             </div>
-            <div className="col-md-4 mb-4">
-              <FaTruck size={40} className="mb-3 text-primary" />
-              <h5 className="fw-bold">
-                Fast Delivery{" "}
-                <span className="badge bg-info ms-2">Express</span>
-              </h5>
-              <p className="text-muted">
-                Speedy and trackable deliveries right to your doorstep.
-              </p>
-            </div>
+          )}
+          <div className="text-center mt-5">
+            <Link to="/products" className="btn btn-outline-primary">
+              View All Products
+            </Link>
           </div>
         </div>
       </section>

@@ -1,5 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {
+  FaShoppingCart,
+  FaUserCircle,
+  FaBoxOpen,
+  FaPlusCircle,
+  FaSignInAlt,
+  FaUserPlus,
+} from "react-icons/fa";
 
 const NavBar = () => {
   const token = localStorage.getItem("token");
@@ -20,12 +28,8 @@ const NavBar = () => {
 
   return (
     <nav
-      className="navbar navbar-expand-lg navbar-dark px-4 shadow-sm position-fixed top-0 w-100"
-      style={{
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
-        backdropFilter: "blur(8px)",
-        zIndex: 999,
-      }}
+      className="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm position-fixed top-0 w-100"
+      style={{ zIndex: 999 }}
     >
       <div className="container-fluid">
         <Link className="navbar-brand fw-bold fs-4" to="/">
@@ -44,27 +48,24 @@ const NavBar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link px-3 rounded-pill" to="/">
+              <Link className="nav-link" to="/">
                 Home
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link px-3 rounded-pill" to="/products">
-                Products
+              <Link className="nav-link" to="/products">
+                <FaBoxOpen className="me-1" /> Products
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link px-3 rounded-pill" to="/cart">
-                Cart
+              <Link className="nav-link" to="/cart">
+                <FaShoppingCart className="me-1" /> Cart
               </Link>
             </li>
             {token && (
               <li className="nav-item">
-                <Link
-                  className="nav-link px-3 rounded-pill"
-                  to="/create-product"
-                >
-                  Add Product
+                <Link className="nav-link" to="/create-product">
+                  <FaPlusCircle className="me-1" /> Add Product
                 </Link>
               </li>
             )}
@@ -73,47 +74,35 @@ const NavBar = () => {
           <form className="d-flex me-3" onSubmit={handleSearch}>
             <input
               type="search"
-              className="form-control form-control-sm rounded-pill me-2"
-              placeholder="Search..."
+              className="form-control me-2"
+              placeholder="Search products..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              style={{
-                backgroundColor: "#f8f9fa",
-                color: "#000",
-                border: "none",
-              }}
             />
-            <button
-              className="btn btn-outline-light btn-sm rounded-pill"
-              type="submit"
-            >
-              Go
+            <button className="btn btn-outline-light" type="submit">
+              Search
             </button>
           </form>
 
-          {!token ? (
-            <>
-              <Link
-                className="btn btn-outline-light btn-sm me-2 rounded-pill"
-                to="/login"
-              >
-                Login
-              </Link>
-              <Link
-                className="btn btn-outline-light btn-sm rounded-pill"
-                to="/signup"
-              >
-                Sign Up
-              </Link>
-            </>
-          ) : (
-            <button
-              className="btn btn-warning btn-sm rounded-pill"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          )}
+          <div className="d-flex align-items-center">
+            {!token ? (
+              <>
+                <Link className="btn btn-outline-light me-2" to="/login">
+                  <FaSignInAlt className="me-1" /> Login
+                </Link>
+                <Link className="btn btn-primary" to="/signup">
+                  <FaUserPlus className="me-1" /> Sign Up
+                </Link>
+              </>
+            ) : (
+              <>
+                <FaUserCircle size={24} className="text-white me-3" />
+                <button className="btn btn-danger" onClick={handleLogout}>
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { checkEmail } from "../utils/checkFormErrors";
 import AlertComp from "../components/AlertComp";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/api";
 
 const LogInPage = () => {
   const navigate = useNavigate();
@@ -28,17 +29,14 @@ const LogInPage = () => {
 
       setError(null);
 
-      const response = await fetch(
-        "https://advanced-java-project.onrender.com/api/users/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/api/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
       if (response.status === 401) {
         throw Error("Invalid credentials, please check");
