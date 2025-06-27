@@ -1,0 +1,16 @@
+# Netlify redirects file for React Router
+# This ensures that all routes are handled by React Router on the client side
+
+# Redirect all routes to index.html for client-side routing
+/*    /index.html   200
+
+# Optional: Redirect API calls to your backend if needed
+# /api/*  https://your-backend-url.com/api/:splat  200
+
+# Handle specific routes (optional - the /* rule above should handle everything)
+/login    /index.html   200
+/signup   /index.html   200
+/products /index.html   200
+/cart     /index.html   200
+/admin    /index.html   200
+/debug    /index.html   200

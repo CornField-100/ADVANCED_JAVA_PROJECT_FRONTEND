@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useCart } from "../contexts/CartContext";
 import { toast } from "react-toastify";
+import { isAdmin } from "../utils/auth";
 import productImgPlaceholder from "../assets/image.png";
 
 const CardComponent = ({
@@ -13,11 +14,14 @@ const CardComponent = ({
   imageUrl,
   onViewDetails,
   onEdit,
-  showEditButton,
+  showEditButton, // This should only be true for admins
 }) => {
   const { addToCart } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  
+  // Double-check admin status in the component
+  const userIsAdmin = isAdmin();
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
@@ -247,7 +251,8 @@ const CardComponent = ({
               )}
             </button>
 
-            {showEditButton && (
+            {/* Only show edit button for admins - double check here */}
+            {showEditButton && userIsAdmin && (
               <button
                 onClick={onEdit}
                 className="btn btn-outline-warning btn-sm rounded-pill fw-semibold transition-all"
