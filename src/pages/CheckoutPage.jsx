@@ -168,27 +168,68 @@ const CheckoutPage = () => {
     setOrderProcessing(true);
 
     try {
-      // Simulate order processing
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const orderData = {
-        items: cart,
-        shippingInfo,
+        items: cart.map(item => ({
+          title: item.title,
+          brand: item.brand,
+          price: parseFloat(item.price),
+          quantity: parseInt(item.quantity),
+          imageUrl: item.imageUrl || ""
+        })),
+        shippingInfo: {
+          firstName: shippingInfo.firstName,
+          lastName: shippingInfo.lastName,
+          email: shippingInfo.email,
+          phone: shippingInfo.phone || "",
+          address: shippingInfo.address,
+          city: shippingInfo.city,
+          state: shippingInfo.state,
+          zipCode: shippingInfo.zipCode,
+          country: shippingInfo.country || "United States"
+        },
         paymentMethod,
-        subtotal,
-        tax,
-        shipping,
-        total,
+        cardInfo: paymentMethod === "card" ? {
+          last4: cardInfo.cardNumber.slice(-4),
+          nameOnCard: cardInfo.nameOnCard
+        } : null,
+        subtotal: parseFloat(subtotal.toFixed(2)),
+        tax: parseFloat(tax.toFixed(2)),
+        shipping: parseFloat(shipping.toFixed(2)),
+        total: parseFloat(total.toFixed(2)),
         orderNotes,
         orderDate: new Date().toISOString(),
         orderId: `ORD-${Date.now()}-${Math.random()
           .toString(36)
           .substr(2, 9)
           .toUpperCase()}`,
+        status: "pending",
+        paymentStatus: "paid"
       };
 
-      // Store order in localStorage (in real app, send to backend)
-      localStorage.setItem("lastOrder", JSON.stringify(orderData));
+      // 🔥 NEW: Send order to backend
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:3001/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create order");
+      }
+
+      const savedOrder = await response.json();
+      console.log("Order saved to backend:", savedOrder);
+
+      // Store locally for order confirmation page
+      localStorage.setItem("lastOrder", JSON.stringify(savedOrder));
 
       // Clear cart
       clearCart();
@@ -197,7 +238,7 @@ const CheckoutPage = () => {
       toast.success(
         <div>
           <div className="fw-bold">🎉 Order Placed Successfully!</div>
-          <div className="small">Order ID: {orderData.orderId}</div>
+          <div className="small">Order ID: {savedOrder.orderId || orderData.orderId}</div>
         </div>,
         {
           autoClose: 5000,
@@ -211,10 +252,38 @@ const CheckoutPage = () => {
 
       // Navigate to success page
       navigate("/order-confirmation", {
-        state: { order: orderData },
+        state: { order: savedOrder || orderData },
       });
     } catch (error) {
-      toast.error("Failed to process order. Please try again.");
+      console.error("Order creation error:", error);
+      toast.error(`Failed to process order: ${error.message}`);
+      
+      // Fallback: save locally if backend fails
+      const fallbackOrder = {
+        items: cart,
+        shippingInfo,
+        paymentMethod,
+        cardInfo: paymentMethod === "card" ? {
+          last4: cardInfo.cardNumber.slice(-4),
+          nameOnCard: cardInfo.nameOnCard
+        } : null,
+        subtotal,
+        tax,
+        shipping,
+        total,
+        orderNotes,
+        orderDate: new Date().toISOString(),
+        orderId: `ORD-${Date.now()}-${Math.random()
+          .toString(36)
+          .substr(2, 9)
+          .toUpperCase()}`,
+        status: "pending",
+        paymentStatus: "paid"
+      };
+      
+      localStorage.setItem("lastOrder", JSON.stringify(fallbackOrder));
+      clearCart();
+      navigate("/order-confirmation", { state: { order: fallbackOrder } });
     } finally {
       setOrderProcessing(false);
     }

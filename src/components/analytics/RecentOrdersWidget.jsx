@@ -201,11 +201,11 @@ const RecentOrdersWidget = () => {
 
                 <div className="col-md-2 text-center">
                   <small className="text-muted">
-                    {format(parseISO(order.date), "MMM dd, yyyy")}
+                    {format(new Date(order.date), "MMM dd, yyyy")}
                   </small>
                   <br />
                   <small className="text-muted">
-                    {format(parseISO(order.date), "HH:mm")}
+                    {format(new Date(order.date), "HH:mm")}
                   </small>
                 </div>
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { isAdmin, getCurrentUser } from "../utils/auth";
 import { fetchProducts } from "../utils/fetchProduts";
+import OrderNotifications from "../components/OrderNotifications";
 import {
   FaUsers,
   FaBox,
@@ -102,6 +103,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="container-fluid py-4">
+      <OrderNotifications />
       {/* Admin Header */}
       <div className="row mb-4">
         <div className="col-12">

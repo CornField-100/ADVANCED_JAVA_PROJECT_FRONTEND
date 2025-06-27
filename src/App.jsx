@@ -14,6 +14,7 @@ import CartPage from "./pages/CartPage";
 import ProductDetail from "./pages/ProductDetail";
 import LandingPage from "./pages/LandingPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import DebugPage from "./pages/DebugPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -64,6 +65,14 @@ const App = () => {
             element={
               <ProtectedRoute adminOnly={true}>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <AdminOrdersPage />
               </ProtectedRoute>
             }
           />
