@@ -1,5 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useCart } from "../contexts/CartContext";
+import { getCurrentUser, isAdmin, logout } from "../utils/auth";
 import {
   FaShoppingCart,
   FaUserCircle,
@@ -7,12 +9,31 @@ import {
   FaPlusCircle,
   FaSignInAlt,
   FaUserPlus,
+  FaTachometerAlt,
+  FaCrown,
 } from "react-icons/fa";
 
 const NavBar = () => {
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState("");
+  const { cart } = useCart();
+  const [cartAnimation, setCartAnimation] = useState(false);
+
+  // Get current user information
+  const currentUser = getCurrentUser();
+  const userIsAdmin = isAdmin();
+
+  // Calculate total items in cart
+  const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  // Animate cart icon when items are added
+  useEffect(() => {
+    if (cartItemsCount > 0) {
+      setCartAnimation(true);
+      const timer = setTimeout(() => setCartAnimation(false), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [cartItemsCount]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -22,8 +43,7 @@ const NavBar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+    logout(); // This will clear localStorage and redirect
   };
 
   return (
@@ -57,12 +77,52 @@ const NavBar = () => {
                 <FaBoxOpen className="me-1" /> Products
               </Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/cart">
-                <FaShoppingCart className="me-1" /> Cart
+            <li className="nav-item position-relative">
+              <Link className="nav-link d-flex align-items-center" to="/cart">
+                <FaShoppingCart
+                  className={`me-1 ${cartAnimation ? "cart-icon-bounce" : ""}`}
+                />
+                Cart
+                {cartItemsCount > 0 && (
+                  <span
+                    className={`badge bg-danger ms-2 cart-badge-animate`}
+                    style={{
+                      fontSize: "0.75rem",
+                      borderRadius: "50%",
+                      minWidth: "20px",
+                      height: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      animation: cartAnimation
+                        ? "badgeScale 0.4s ease-in-out"
+                        : "none",
+                    }}
+                  >
+                    {cartItemsCount}
+                  </span>
+                )}
               </Link>
             </li>
-            {token && (
+
+            {/* Admin-only navigation items */}
+            {userIsAdmin && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link text-warning" to="/admin">
+                    <FaTachometerAlt className="me-1" /> Admin Dashboard
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/create-product">
+                    <FaPlusCircle className="me-1" /> Add Product
+                  </Link>
+                </li>
+              </>
+            )}
+
+            {/* Regular user product creation (if not admin) */}
+            {currentUser && !userIsAdmin && (
               <li className="nav-item">
                 <Link className="nav-link" to="/create-product">
                   <FaPlusCircle className="me-1" /> Add Product
@@ -85,7 +145,7 @@ const NavBar = () => {
           </form>
 
           <div className="d-flex align-items-center">
-            {!token ? (
+            {!currentUser ? (
               <>
                 <Link className="btn btn-outline-light me-2" to="/login">
                   <FaSignInAlt className="me-1" /> Login
@@ -96,7 +156,39 @@ const NavBar = () => {
               </>
             ) : (
               <>
-                <FaUserCircle size={24} className="text-white me-3" />
+                {/* User Info */}
+                <div className="d-flex align-items-center me-3">
+                  {currentUser.imageUrl ? (
+                    <img
+                      src={currentUser.imageUrl}
+                      alt="Profile"
+                      className="rounded-circle me-2"
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <FaUserCircle size={32} className="text-white me-2" />
+                  )}
+                  <div className="text-white d-none d-md-block">
+                    <div style={{ fontSize: "0.9rem", fontWeight: "500" }}>
+                      {currentUser.firstName} {currentUser.lastName}
+                    </div>
+                    <div style={{ fontSize: "0.75rem" }} className="opacity-75">
+                      {userIsAdmin ? (
+                        <span className="text-warning">
+                          <FaCrown className="me-1" size={12} />
+                          Administrator
+                        </span>
+                      ) : (
+                        "User"
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 <button className="btn btn-danger" onClick={handleLogout}>
                   Logout
                 </button>

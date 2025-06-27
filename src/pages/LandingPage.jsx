@@ -3,12 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { fetchProducts } from "../utils/fetchProduts";
 import CardComponent from "../components/CardComponent";
 import Hero from "../components/Hero"; // Import the Hero component
+import { isAdmin } from "../utils/auth";
 
 const LandingPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const userIsAdmin = isAdmin();
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -59,7 +60,7 @@ const LandingPage = () => {
                     productId={product._id}
                     onViewDetails={() => handleViewDetails(product._id)}
                     onEdit={() => handleEdit(product._id)}
-                    showEditButton={!!token}
+                    showEditButton={userIsAdmin}
                   />
                 </div>
               ))}

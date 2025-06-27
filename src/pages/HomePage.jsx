@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProducts } from "../utils/fetchProduts";
 import CardComponent from "../components/CardComponent";
+import { isAdmin } from "../utils/auth";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const userIsAdmin = isAdmin();
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -28,7 +29,7 @@ const HomePage = () => {
   }, []);
 
   const handleEdit = (productId) => {
-    if (!token) {
+    if (!userIsAdmin) {
       navigate("/login");
     } else {
       navigate(`/edit-product/${productId}`);
@@ -77,7 +78,7 @@ const HomePage = () => {
               productId={product._id}
               onViewDetails={() => handleViewDetails(product._id)}
               onEdit={() => handleEdit(product._id)}
-              showEditButton={!!token} // Show edit button only if logged in
+              showEditButton={userIsAdmin} // Show edit button only if user is admin
             />
           </div>
         ))}

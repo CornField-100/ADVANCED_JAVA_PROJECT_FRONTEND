@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useCart } from "../contexts/CartContext";
+import { toast } from "react-toastify";
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
 
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({
@@ -56,6 +61,71 @@ const ProductDetail = () => {
     setNewReview({ ...newReview, [e.target.name]: e.target.value });
   };
 
+  const handleAddToCart = async () => {
+    if (product.stock <= 0) {
+      toast.error("Sorry, this item is out of stock!", {
+        style: {
+          borderRadius: "12px",
+          background: "linear-gradient(135deg, #ff6b6b, #ee5a24)",
+          boxShadow: "0 8px 25px rgba(255, 107, 107, 0.3)",
+        },
+      });
+      return;
+    }
+
+    setIsAdding(true);
+
+    // Enhanced delay with multiple feedback stages
+    setTimeout(() => {
+      addToCart({
+        productId: product._id,
+        title: product.Model || product.model || "Unnamed Product",
+        brand: product.brand,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        quantity: 1,
+      });
+
+      // Show enhanced success toast with celebration
+      toast.success(
+        <div className="d-flex align-items-center">
+          <div className="me-3" style={{ fontSize: "1.5rem" }}>
+            ✓
+          </div>
+          <div>
+            <div style={{ fontWeight: "bold" }}>Added to Cart</div>
+            <div style={{ fontSize: "0.9rem" }}>
+              {product.brand} {product.Model || product.model} added
+              successfully
+            </div>
+          </div>
+        </div>,
+        {
+          icon: false,
+          style: {
+            background: "linear-gradient(135deg, #28a745, #20c997, #17a2b8)",
+            color: "white",
+            borderRadius: "15px",
+            fontWeight: "600",
+            boxShadow: "0 10px 30px rgba(40, 167, 69, 0.4)",
+            border: "2px solid rgba(255, 255, 255, 0.2)",
+          },
+          progressStyle: {
+            background: "rgba(255, 255, 255, 0.3)",
+            height: "4px",
+          },
+          autoClose: 3000,
+        }
+      );
+
+      setIsAdding(false);
+      setJustAdded(true);
+
+      // Reset the "just added" state after animation
+      setTimeout(() => setJustAdded(false), 3000);
+    }, 500);
+  };
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     const res = await fetch(`http://localhost:3001/api/reviews/${id}`, {
@@ -102,8 +172,91 @@ const ProductDetail = () => {
               <strong>Price:</strong> ${product.price}
             </p>
             <p>
-              <strong>Stock:</strong> {product.stock}
+              <strong>Stock:</strong>
+              {product.stock > 0 ? (
+                <span className="text-success fw-semibold">
+                  {" "}
+                  {product.stock} In Stock
+                </span>
+              ) : (
+                <span className="text-danger"> Out of Stock</span>
+              )}
             </p>
+
+            {/* Add to Cart Button */}
+            <div className="mt-4 mb-3">
+              <button
+                onClick={handleAddToCart}
+                disabled={product.stock <= 0 || isAdding}
+                className={`btn btn-lg rounded-pill fw-semibold px-5 py-3 transition-all btn-ripple ${
+                  justAdded
+                    ? "btn-success-added"
+                    : product.stock <= 0
+                    ? "btn-outline-secondary"
+                    : "btn-success hover-btn-success"
+                } ${isAdding ? "btn-adding" : ""}`}
+                style={{
+                  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                  transform: isAdding
+                    ? "scale(0.98)"
+                    : justAdded
+                    ? "scale(1.02)"
+                    : "scale(1)",
+                  opacity: isAdding ? 0.8 : 1,
+                  minWidth: "250px",
+                  fontSize: "1.1rem",
+                  background: justAdded
+                    ? "linear-gradient(135deg, #28a745, #20c997)"
+                    : product.stock <= 0
+                    ? "#6c757d"
+                    : "linear-gradient(45deg, #28a745, #20c997)",
+                  border: "none",
+                  boxShadow: justAdded
+                    ? "0 8px 25px rgba(40, 167, 69, 0.4)"
+                    : isAdding
+                    ? "0 4px 15px rgba(40, 167, 69, 0.2)"
+                    : "0 6px 20px rgba(40, 167, 69, 0.3)",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                {isAdding ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-3 btn-spinner"
+                      role="status"
+                      style={{ width: "1.2rem", height: "1.2rem" }}
+                    ></span>
+                    Adding to Cart...
+                  </>
+                ) : justAdded ? (
+                  <>Successfully Added!</>
+                ) : product.stock <= 0 ? (
+                  <>Sorry, Out of Stock</>
+                ) : (
+                  <>Add to Cart - ${product.price}</>
+                )}
+              </button>
+
+              {/* Additional feedback for recently added */}
+              {justAdded && (
+                <div
+                  className="mt-3 alert alert-success border-0 rounded-pill text-center"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(32, 201, 151, 0.1))",
+                    border: "2px solid rgba(40, 167, 69, 0.2)",
+                    animation: "successPulse 2s ease-in-out infinite",
+                  }}
+                >
+                  {" "}
+                  <small className="fw-semibold text-success">
+                    Item added to your cart! Check it out in the navigation bar.
+                  </small>
+                </div>
+              )}
+            </div>
+
             {product.description && (
               <>
                 <hr />
@@ -127,14 +280,17 @@ const ProductDetail = () => {
         ) : (
           <ul className="list-group mb-4">
             {reviews.map((r, i) => (
-              <li key={i} className="list-group-item">
-                <strong>{r.name}</strong>{" "}
-                <span className="text-warning">({r.rating}/5)</span>
-                <br />
-                <span>{r.comment}</span>
-                <br />
+              <li
+                key={i}
+                className="list-group-item border-0 bg-light rounded mb-2"
+              >
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                  <strong className="text-primary">{r.name}</strong>
+                  <span className="badge bg-primary">{r.rating}/5</span>
+                </div>
+                <p className="mb-2">{r.comment}</p>
                 <small className="text-muted">
-                  {r.date ? new Date(r.date).toLocaleString() : ""}
+                  {r.date ? new Date(r.date).toLocaleDateString() : ""}
                 </small>
               </li>
             ))}
@@ -165,10 +321,10 @@ const ProductDetail = () => {
               onChange={handleInputChange}
               required
             >
-              <option value="">Rating</option>
+              <option value="">Select Rating</option>
               {[5, 4, 3, 2, 1].map((n) => (
                 <option key={n} value={n}>
-                  {"⭐️".repeat(n)} ({n})
+                  {n} {n === 1 ? "Star" : "Stars"}
                 </option>
               ))}
             </select>
