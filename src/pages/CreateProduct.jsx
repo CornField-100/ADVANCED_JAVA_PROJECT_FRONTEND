@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import LabelComp from "../components/LabelComp";
 import InputForm from "../components/InputFormComp";
 import AlertComp from "../components/AlertComp";
+import { BASE_URL } from "../utils/api";
+import { getCurrentUser, isAdmin } from "../utils/auth";
 
 const CreateProduct = () => {
   const navigate = useNavigate();
@@ -16,10 +18,45 @@ const CreateProduct = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Redirect to login if not authenticated
+  // Debug current user state
+  const currentUser = getCurrentUser();
+  const userIsAdmin = isAdmin();
+
+  console.log("CreateProduct - Current User:", currentUser);
+  console.log("CreateProduct - Is Admin:", userIsAdmin);
+
+  // Enhanced auth check
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) navigate("/login");
+    const user = getCurrentUser();
+    const isUserAdmin = isAdmin();
+
+    console.log("CreateProduct Auth Check:", {
+      hasToken: !!token,
+      user,
+      isUserAdmin,
+    });
+
+    if (!token) {
+      console.log("No token found, redirecting to login");
+      navigate("/login");
+      return;
+    }
+
+    if (!user) {
+      console.log("Invalid token, redirecting to login");
+      localStorage.removeItem("token");
+      navigate("/login");
+      return;
+    }
+
+    if (!isUserAdmin) {
+      console.log("User is not admin, redirecting to home");
+      navigate("/");
+      return;
+    }
+
+    console.log("Auth check passed - user can create products");
   }, [navigate]);
 
   const handleChange = (field) => (value) =>
@@ -42,23 +79,20 @@ const CreateProduct = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
 
-      const response = await fetch(
-        "http://localhost:3001/api/product/addProduct",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            brand: formData.brand,
-            Model: formData.Model,
-            stock: Number(formData.stock),
-            price: Number(formData.price),
-          }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/api/product/addProduct`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          brand: formData.brand,
+          Model: formData.Model,
+          stock: Number(formData.stock),
+          price: Number(formData.price),
+        }),
+      });
 
       const serverData = await response.json();
 

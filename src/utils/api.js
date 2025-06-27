@@ -1,7 +1,8 @@
-// Switch between local and production
-// export const BASE_URL = process.env.NODE_ENV === 'production'
-//   ? "https://advanced-java-project.onrender.com"
-//   : "http://localhost:3001";
+// Automatically switch between local and production based on hostname
+export const BASE_URL =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3001"
+    : "https://advanced-java-project.onrender.com";
 
-// Using local backend for development
-export const BASE_URL = "http://localhost:3001";
+console.log("Using API Base URL:", BASE_URL);

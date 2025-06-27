@@ -39,7 +39,7 @@ const App = () => {
           <Route
             path="/create-product"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly={true}>
                 <CreateProduct />
               </ProtectedRoute>
             }
@@ -47,7 +47,7 @@ const App = () => {
           <Route
             path="/edit-product/:id"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly={true}>
                 <EditProductPage />
               </ProtectedRoute>
             }

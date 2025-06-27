@@ -19,9 +19,12 @@ const CardComponent = ({
   const { addToCart } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
-  
-  // Double-check admin status in the component
+
+  // Always check admin status in the component for security
   const userIsAdmin = isAdmin();
+
+  // Only allow edit button if user is admin AND showEditButton is true
+  const shouldShowEditButton = showEditButton && userIsAdmin;
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
@@ -251,8 +254,8 @@ const CardComponent = ({
               )}
             </button>
 
-            {/* Only show edit button for admins - double check here */}
-            {showEditButton && userIsAdmin && (
+            {/* Only show edit button for admins */}
+            {shouldShowEditButton && (
               <button
                 onClick={onEdit}
                 className="btn btn-outline-warning btn-sm rounded-pill fw-semibold transition-all"

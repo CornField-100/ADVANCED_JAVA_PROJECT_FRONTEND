@@ -1,9 +1,9 @@
 const AlertComp = ({ alertType, text }) => {
-    return (
-        <div class={`alert ${alertType}`} role="alert">
-            {text}
-        </div>
-    )
-}
+  return (
+    <div className={`alert ${alertType}`} role="alert">
+      {text}
+    </div>
+  );
+};
 
-export default AlertComp
+export default AlertComp;

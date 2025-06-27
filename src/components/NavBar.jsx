@@ -109,7 +109,10 @@ const NavBar = () => {
             {userIsAdmin && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link text-warning" to="/admin">
+                  <Link
+                    className="nav-link text-warning fw-semibold"
+                    to="/admin"
+                  >
                     <FaTachometerAlt className="me-1" /> Admin Dashboard
                   </Link>
                 </li>
@@ -119,15 +122,6 @@ const NavBar = () => {
                   </Link>
                 </li>
               </>
-            )}
-
-            {/* Regular user product creation (if not admin) */}
-            {currentUser && !userIsAdmin && (
-              <li className="nav-item">
-                <Link className="nav-link" to="/create-product">
-                  <FaPlusCircle className="me-1" /> Add Product
-                </Link>
-              </li>
             )}
           </ul>
 
