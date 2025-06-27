@@ -14,7 +14,10 @@ import CartPage from "./pages/CartPage";
 import ProductDetail from "./pages/ProductDetail";
 import LandingPage from "./pages/LandingPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import DebugPage from "./pages/DebugPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderConfirmation from "./pages/OrderConfirmation";
 
 // Components
 import NavBar from "./components/NavBar";
@@ -32,6 +35,8 @@ const App = () => {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/search" element={<SearchProductPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-confirmation" element={<OrderConfirmation />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/debug" element={<DebugPage />} />
 
@@ -59,6 +64,14 @@ const App = () => {
             element={
               <ProtectedRoute adminOnly={true}>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <AnalyticsDashboard />
               </ProtectedRoute>
             }
           />

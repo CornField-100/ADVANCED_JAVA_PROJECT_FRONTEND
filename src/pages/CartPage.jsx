@@ -1,10 +1,11 @@
 import { useCart } from "../contexts/CartContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaTrash, FaMinus, FaPlus } from "react-icons/fa";
 import productImgPlaceholder from "../assets/image.png";
 
 const CartPage = () => {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const navigate = useNavigate();
 
   const totalPrice = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -157,7 +158,10 @@ const CartPage = () => {
               <span>Total:</span>
               <span>${(totalPrice * 1.08).toFixed(2)}</span>
             </div>
-            <button className="btn btn-success w-100 mb-3 btn-lg">
+            <button 
+              className="btn btn-success w-100 mb-3 btn-lg"
+              onClick={() => navigate("/checkout")}
+            >
               Proceed to Checkout
             </button>
             <button

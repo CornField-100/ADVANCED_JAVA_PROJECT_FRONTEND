@@ -4,7 +4,6 @@
 export const decodeToken = (token) => {
   try {
     if (!token) {
-      console.log("No token provided to decode");
       return null;
     }
 
@@ -16,10 +15,7 @@ export const decodeToken = (token) => {
     // Check if this looks like a JWT token
     const parts = token.split(".");
     if (parts.length !== 3) {
-      console.log("Invalid JWT format - not 3 parts:", parts.length);
-
-      // If it's not a JWT, try to see if it's a simple token we can work with
-      // For now, return null, but you could implement simple token handling here
+      // If it's not a JWT, return null
       return null;
     }
 
@@ -29,7 +25,6 @@ export const decodeToken = (token) => {
     const paddedPayload = payload + "=".repeat((4 - (payload.length % 4)) % 4);
     const decoded = JSON.parse(atob(paddedPayload));
 
-    console.log("Successfully decoded JWT token:", decoded);
     return decoded;
   } catch (error) {
     console.error("Error decoding token:", error);
@@ -41,19 +36,13 @@ export const decodeToken = (token) => {
 export const getCurrentUser = () => {
   try {
     const token = localStorage.getItem("token");
-    console.log(
-      "Getting current user, raw token:",
-      token?.substring(0, 50) + "..."
-    ); // Debug log
 
     if (!token) {
-      console.log("No token found in localStorage");
       return null;
     }
 
     const decoded = decodeToken(token);
     if (!decoded) {
-      console.log("Failed to decode token, removing invalid token");
       localStorage.removeItem("token");
       return null;
     }
@@ -61,7 +50,6 @@ export const getCurrentUser = () => {
     // Check if token is expired
     const currentTime = Date.now() / 1000;
     if (decoded.exp && decoded.exp < currentTime) {
-      console.log("Token is expired, removing expired token");
       localStorage.removeItem("token");
       return null;
     }
@@ -75,7 +63,6 @@ export const getCurrentUser = () => {
       imageUrl: decoded.imageUrl,
     };
 
-    console.log("Current user extracted from token:", user); // Debug log
     return user;
   } catch (error) {
     console.error("Error in getCurrentUser:", error);

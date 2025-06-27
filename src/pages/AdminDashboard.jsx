@@ -207,10 +207,20 @@ const AdminDashboard = () => {
                   <FaShoppingCart /> View Orders
                 </button>
                 <button
-                  onClick={() => navigate("/admin/analytics")}
-                  className="btn btn-outline-info d-flex align-items-center gap-2"
+                  onClick={() => navigate("/analytics")}
+                  className="btn btn-gradient text-white d-flex align-items-center gap-2 position-relative"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    border: "none",
+                    boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)",
+                  }}
                 >
-                  <FaChartLine /> Analytics
+                  <FaChartLine />
+                  <span>🚀 Advanced Analytics</span>
+                  <span className="badge bg-warning text-dark ms-2 px-2 py-1 rounded-pill small">
+                    NEW!
+                  </span>
                 </button>
               </div>
             </div>
