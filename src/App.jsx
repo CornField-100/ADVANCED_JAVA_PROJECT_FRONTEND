@@ -28,66 +28,140 @@ const App = () => {
   return (
     <Router>
       <NavBar />
-      <main style={{ paddingTop: "5rem" }} className="container">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/products" element={<HomePage />} />
-          <Route path="/login" element={<LogInPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/search" element={<SearchProductPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/order-confirmation" element={<OrderConfirmation />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
-          <Route path="/debug" element={<DebugPage />} />
-
-          {/* Protected Routes */}
-          <Route
-            path="/create-product"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <CreateProduct />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/edit-product/:id"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <EditProductPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Admin-only Routes */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/orders"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <AdminOrdersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/analytics"
-            element={
+      <Routes>
+        {/* Full-width routes (no container) */}
+        <Route
+          path="/analytics"
+          element={
+            <div style={{ paddingTop: "5rem" }}>
               <ProtectedRoute adminOnly={true}>
                 <AnalyticsDashboard />
               </ProtectedRoute>
-            }
-          />
+            </div>
+          }
+        />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
+        {/* Regular containerized routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/products"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <HomePage />
+            </main>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <LogInPage />
+            </main>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <SignUpPage />
+            </main>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <SearchProductPage />
+            </main>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <CartPage />
+            </main>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <CheckoutPage />
+            </main>
+          }
+        />
+        <Route
+          path="/order-confirmation"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <OrderConfirmation />
+            </main>
+          }
+        />
+        <Route
+          path="/products/:id"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <ProductDetail />
+            </main>
+          }
+        />
+        <Route
+          path="/debug"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <DebugPage />
+            </main>
+          }
+        />
+
+        {/* Protected Routes */}
+        <Route
+          path="/create-product"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <ProtectedRoute adminOnly={true}>
+                <CreateProduct />
+              </ProtectedRoute>
+            </main>
+          }
+        />
+        <Route
+          path="/edit-product/:id"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <ProtectedRoute adminOnly={true}>
+                <EditProductPage />
+              </ProtectedRoute>
+            </main>
+          }
+        />
+
+        {/* Admin-only Routes */}
+        <Route
+          path="/admin"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <ProtectedRoute adminOnly={true}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            </main>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <main style={{ paddingTop: "5rem" }} className="container">
+              <ProtectedRoute adminOnly={true}>
+                <AdminOrdersPage />
+              </ProtectedRoute>
+            </main>
+          }
+        />
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
       <ToastContainer
         position="top-right"
         autoClose={3000}

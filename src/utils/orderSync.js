@@ -18,12 +18,12 @@ export const addOrderToAdmin = (orderData) => {
       customer: {
         name: `${orderData.shippingInfo.firstName} ${orderData.shippingInfo.lastName}`,
         email: orderData.shippingInfo.email,
-        id: orderData.userId || "local-user"
+        id: orderData.userId || "local-user",
       },
-      items: orderData.items.map(item => ({
+      items: orderData.items.map((item) => ({
         name: item.title,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
       })),
       total: orderData.total,
       status: orderData.status || "pending",
@@ -32,7 +32,7 @@ export const addOrderToAdmin = (orderData) => {
       date: orderData.orderDate,
       shippingAddress: `${orderData.shippingInfo.address}, ${orderData.shippingInfo.city}, ${orderData.shippingInfo.state} ${orderData.shippingInfo.zipCode}`,
       trackingNumber: null,
-      notes: orderData.orderNotes || ""
+      notes: orderData.orderNotes || "",
     };
 
     return adminOrder;
@@ -46,11 +46,12 @@ export const syncLocalOrdersWithAdmin = (existingOrders) => {
   const localOrders = getLocalOrders();
   const transformedLocal = localOrders
     .map(addOrderToAdmin)
-    .filter(order => order !== null);
+    .filter((order) => order !== null);
 
   // Check if local orders are already in existing orders
-  const newOrders = transformedLocal.filter(localOrder => 
-    !existingOrders.some(existing => existing.id === localOrder.id)
+  const newOrders = transformedLocal.filter(
+    (localOrder) =>
+      !existingOrders.some((existing) => existing.id === localOrder.id)
   );
 
   return [...existingOrders, ...newOrders];

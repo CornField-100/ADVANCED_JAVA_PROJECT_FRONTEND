@@ -172,12 +172,12 @@ const CheckoutPage = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const orderData = {
-        items: cart.map(item => ({
+        items: cart.map((item) => ({
           title: item.title,
           brand: item.brand,
           price: parseFloat(item.price),
           quantity: parseInt(item.quantity),
-          imageUrl: item.imageUrl || ""
+          imageUrl: item.imageUrl || "",
         })),
         shippingInfo: {
           firstName: shippingInfo.firstName,
@@ -188,13 +188,16 @@ const CheckoutPage = () => {
           city: shippingInfo.city,
           state: shippingInfo.state,
           zipCode: shippingInfo.zipCode,
-          country: shippingInfo.country || "United States"
+          country: shippingInfo.country || "United States",
         },
         paymentMethod,
-        cardInfo: paymentMethod === "card" ? {
-          last4: cardInfo.cardNumber.slice(-4),
-          nameOnCard: cardInfo.nameOnCard
-        } : null,
+        cardInfo:
+          paymentMethod === "card"
+            ? {
+                last4: cardInfo.cardNumber.slice(-4),
+                nameOnCard: cardInfo.nameOnCard,
+              }
+            : null,
         subtotal: parseFloat(subtotal.toFixed(2)),
         tax: parseFloat(tax.toFixed(2)),
         shipping: parseFloat(shipping.toFixed(2)),
@@ -206,7 +209,7 @@ const CheckoutPage = () => {
           .substr(2, 9)
           .toUpperCase()}`,
         status: "pending",
-        paymentStatus: "paid"
+        paymentStatus: "paid",
       };
 
       // 🔥 NEW: Send order to backend
@@ -215,9 +218,9 @@ const CheckoutPage = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(orderData),
       });
 
       if (!response.ok) {
@@ -238,7 +241,9 @@ const CheckoutPage = () => {
       toast.success(
         <div>
           <div className="fw-bold">🎉 Order Placed Successfully!</div>
-          <div className="small">Order ID: {savedOrder.orderId || orderData.orderId}</div>
+          <div className="small">
+            Order ID: {savedOrder.orderId || orderData.orderId}
+          </div>
         </div>,
         {
           autoClose: 5000,
@@ -257,16 +262,19 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error("Order creation error:", error);
       toast.error(`Failed to process order: ${error.message}`);
-      
+
       // Fallback: save locally if backend fails
       const fallbackOrder = {
         items: cart,
         shippingInfo,
         paymentMethod,
-        cardInfo: paymentMethod === "card" ? {
-          last4: cardInfo.cardNumber.slice(-4),
-          nameOnCard: cardInfo.nameOnCard
-        } : null,
+        cardInfo:
+          paymentMethod === "card"
+            ? {
+                last4: cardInfo.cardNumber.slice(-4),
+                nameOnCard: cardInfo.nameOnCard,
+              }
+            : null,
         subtotal,
         tax,
         shipping,
@@ -278,9 +286,9 @@ const CheckoutPage = () => {
           .substr(2, 9)
           .toUpperCase()}`,
         status: "pending",
-        paymentStatus: "paid"
+        paymentStatus: "paid",
       };
-      
+
       localStorage.setItem("lastOrder", JSON.stringify(fallbackOrder));
       clearCart();
       navigate("/order-confirmation", { state: { order: fallbackOrder } });

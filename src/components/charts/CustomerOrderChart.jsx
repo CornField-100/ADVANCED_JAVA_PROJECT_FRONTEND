@@ -1,4 +1,4 @@
-import { Bar, Doughnut } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -7,7 +7,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement,
 } from "chart.js";
 
 ChartJS.register(
@@ -16,8 +15,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend,
-  ArcElement
+  Legend
 );
 
 const CustomerOrderChart = () => {
@@ -57,29 +55,6 @@ const CustomerOrderChart = () => {
         borderWidth: 2,
         borderRadius: 8,
         borderSkipped: false,
-      },
-    ],
-  };
-
-  const orderStatusData = {
-    labels: ["Delivered", "Pending", "Shipped", "Cancelled"],
-    datasets: [
-      {
-        data: [65, 15, 15, 5],
-        backgroundColor: [
-          "rgba(34, 197, 94, 0.8)",
-          "rgba(251, 191, 36, 0.8)",
-          "rgba(59, 130, 246, 0.8)",
-          "rgba(239, 68, 68, 0.8)",
-        ],
-        borderColor: [
-          "rgba(34, 197, 94, 1)",
-          "rgba(251, 191, 36, 1)",
-          "rgba(59, 130, 246, 1)",
-          "rgba(239, 68, 68, 1)",
-        ],
-        borderWidth: 3,
-        hoverOffset: 10,
       },
     ],
   };
@@ -148,125 +123,124 @@ const CustomerOrderChart = () => {
     },
   };
 
-  const doughnutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: "70%",
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          padding: 20,
-          usePointStyle: true,
-          font: {
-            size: 12,
-            weight: "500",
-          },
-        },
-      },
-      title: {
-        display: true,
-        text: "📊 Order Status Distribution",
-        font: {
-          size: 16,
-          weight: "bold",
-        },
-        color: "#374151",
-        padding: {
-          bottom: 20,
-        },
-      },
-      tooltip: {
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
-        titleColor: "#fff",
-        bodyColor: "#fff",
-        borderColor: "rgba(255, 255, 255, 0.2)",
-        borderWidth: 1,
-        cornerRadius: 8,
-        callbacks: {
-          label: function (context) {
-            const percentage = (
-              (context.parsed /
-                context.dataset.data.reduce((a, b) => a + b, 0)) *
-              100
-            ).toFixed(1);
-            return `${context.label}: ${context.parsed} (${percentage}%)`;
-          },
-        },
-      },
-    },
-    animation: {
-      animateRotate: true,
-      duration: 2000,
-    },
-  };
-
   return (
-    <div className="row">
-      <div className="col-lg-8 mb-4">
-        <div className="card border-0 shadow-sm h-100">
-          <div
-            className="card-header bg-gradient text-white border-0"
-            style={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              borderRadius: "0.375rem 0.375rem 0 0",
-            }}
-          >
-            <h5 className="mb-0 d-flex align-items-center">
-              <span className="me-2">👥</span>
-              Top Customers Analytics
-            </h5>
+    <div className="customer-analytics-section">
+      {/* Section Header */}
+      <div className="analytics-section-header mb-5">
+        <div className="d-flex align-items-center justify-content-between">
+          <div>
+            <h3 className="fw-bold text-dark mb-2">
+              <span className="me-2 fs-4">👥</span>
+              Customer Analytics Hub
+            </h3>
+            <p className="text-muted mb-0">
+              Comprehensive view of customer behavior and order patterns
+            </p>
           </div>
-          <div className="card-body p-4">
-            <div style={{ height: "350px" }}>
-              <Bar data={customerOrderData} options={barOptions} />
-            </div>
-            <div className="mt-3 pt-3 border-top">
-              <div className="row text-center">
-                <div className="col-md-4">
-                  <div className="text-primary fw-bold fs-5">84</div>
-                  <div className="text-muted small">Total Customers</div>
-                </div>
-                <div className="col-md-4">
-                  <div className="text-success fw-bold fs-5">89%</div>
-                  <div className="text-muted small">Returning Rate</div>
-                </div>
-                <div className="col-md-4">
-                  <div className="text-info fw-bold fs-5">$247</div>
-                  <div className="text-muted small">Avg Order Value</div>
-                </div>
-              </div>
-            </div>
+          <div className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+            <i className="fas fa-chart-line me-1"></i>
+            Insights Available
           </div>
         </div>
       </div>
 
-      <div className="col-lg-4 mb-4">
-        <div className="card border-0 shadow-sm h-100">
-          <div
-            className="card-header bg-gradient text-white border-0"
-            style={{
-              background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-              borderRadius: "0.375rem 0.375rem 0 0",
-            }}
-          >
-            <h5 className="mb-0 d-flex align-items-center">
-              <span className="me-2">📦</span>
-              Order Status Overview
-            </h5>
-          </div>
-          <div className="card-body p-4">
-            <div style={{ height: "250px" }}>
-              <Doughnut data={orderStatusData} options={doughnutOptions} />
-            </div>
-            <div className="mt-3 pt-3 border-top">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <span className="text-muted">Total Orders Today</span>
-                <span className="fw-bold text-primary">156</span>
-              </div>
+      {/* Top Customers Bar Chart - Full Width */}
+      <div className="row mb-5">
+        <div className="col-12">
+          <div className="card border-0 shadow-lg analytics-card">
+            <div
+              className="card-header bg-gradient text-white border-0 py-4"
+              style={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                borderRadius: "0.5rem 0.5rem 0 0",
+              }}
+            >
               <div className="d-flex justify-content-between align-items-center">
-                <span className="text-muted">Success Rate</span>
-                <span className="fw-bold text-success">94.2%</span>
+                <h5 className="mb-0 d-flex align-items-center">
+                  <span className="me-3 fs-4">🏆</span>
+                  Top Customers by Order Count
+                </h5>
+                <div className="badge bg-white text-dark px-3 py-2 rounded-pill fw-semibold">
+                  Performance Leaders
+                </div>
+              </div>
+            </div>
+            <div className="card-body p-5">
+              <div style={{ height: "400px", marginBottom: "2rem" }}>
+                <Bar data={customerOrderData} options={barOptions} />
+              </div>
+
+              {/* Customer Statistics */}
+              <div
+                className="customer-stats-grid mt-4 pt-4"
+                style={{ borderTop: "2px solid #f8f9fa" }}
+              >
+                <div className="row g-4">
+                  <div className="col-md-3">
+                    <div
+                      className="stat-card text-center p-4 rounded-3"
+                      style={{
+                        backgroundColor: "#f0f9ff",
+                        border: "1px solid #e0f2fe",
+                      }}
+                    >
+                      <div className="stat-icon mb-3">
+                        <span className="fs-2">👤</span>
+                      </div>
+                      <div className="text-primary fw-bold fs-4 mb-1">84</div>
+                      <div className="text-muted fw-medium">
+                        Total Customers
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div
+                      className="stat-card text-center p-4 rounded-3"
+                      style={{
+                        backgroundColor: "#f0fdf4",
+                        border: "1px solid #dcfce7",
+                      }}
+                    >
+                      <div className="stat-icon mb-3">
+                        <span className="fs-2">🔄</span>
+                      </div>
+                      <div className="text-success fw-bold fs-4 mb-1">89%</div>
+                      <div className="text-muted fw-medium">Returning Rate</div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div
+                      className="stat-card text-center p-4 rounded-3"
+                      style={{
+                        backgroundColor: "#fefce8",
+                        border: "1px solid #fef3c7",
+                      }}
+                    >
+                      <div className="stat-icon mb-3">
+                        <span className="fs-2">💰</span>
+                      </div>
+                      <div className="text-warning fw-bold fs-4 mb-1">$247</div>
+                      <div className="text-muted fw-medium">
+                        Avg Order Value
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div
+                      className="stat-card text-center p-4 rounded-3"
+                      style={{
+                        backgroundColor: "#fdf2f8",
+                        border: "1px solid #fce7f3",
+                      }}
+                    >
+                      <div className="stat-icon mb-3">
+                        <span className="fs-2">⭐</span>
+                      </div>
+                      <div className="text-info fw-bold fs-4 mb-1">4.8</div>
+                      <div className="text-muted fw-medium">Avg Rating</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

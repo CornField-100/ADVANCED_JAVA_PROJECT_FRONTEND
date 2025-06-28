@@ -110,12 +110,12 @@ const GeographicAnalytics = () => {
       {
         label: "Order Activity by Time Zone",
         data: [
-          { x: -8, y: 45, r: 15 }, // PST
-          { x: -5, y: 68, r: 20 }, // EST
-          { x: 0, y: 52, r: 18 }, // GMT
-          { x: 1, y: 38, r: 14 }, // CET
-          { x: 8, y: 42, r: 16 }, // CST
-          { x: 9, y: 35, r: 13 }, // JST
+          { x: -8, y: 45, r: 15 },
+          { x: -5, y: 68, r: 20 },
+          { x: 0, y: 52, r: 18 },
+          { x: 1, y: 38, r: 14 },
+          { x: 8, y: 42, r: 16 },
+          { x: 9, y: 35, r: 13 },
         ],
         backgroundColor: "rgba(99, 102, 241, 0.6)",
         borderColor: "rgba(99, 102, 241, 1)",
@@ -125,7 +125,6 @@ const GeographicAnalytics = () => {
   });
 
   useEffect(() => {
-    // Simulate real-time updates
     const interval = setInterval(() => {
       setTopCities((prev) =>
         prev.map((city) => ({
@@ -272,7 +271,7 @@ const GeographicAnalytics = () => {
   };
 
   return (
-    <div className="geographic-analytics-enhanced">
+    <div className="geographic-analytics">
       {/* Enhanced Header with Global Stats */}
       <div className="global-header mb-4">
         <div className="row g-4">
@@ -283,10 +282,10 @@ const GeographicAnalytics = () => {
                   <div className="spinning-globe">🌍</div>
                 </div>
                 <div>
-                  <h4 className="mb-1 fw-bold text-white">
+                  <h4 className="mb-1 fw-bold text-dark">
                     Global Sales Distribution
                   </h4>
-                  <p className="text-white-50 mb-0">
+                  <p className="text-muted mb-0">
                     Real-time geographic performance across 87 countries
                   </p>
                 </div>
@@ -296,22 +295,20 @@ const GeographicAnalytics = () => {
                 <div className="row g-3">
                   <div className="col-4">
                     <div className="stat-item">
-                      <div className="stat-value text-white">87</div>
-                      <div className="stat-label text-white-50">Countries</div>
+                      <div className="stat-value text-primary">87</div>
+                      <div className="stat-label">Countries</div>
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="stat-item">
-                      <div className="stat-value text-white">234</div>
-                      <div className="stat-label text-white-50">Cities</div>
+                      <div className="stat-value text-success">234</div>
+                      <div className="stat-label">Cities</div>
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="stat-item">
-                      <div className="stat-value text-white">$2.8M</div>
-                      <div className="stat-label text-white-50">
-                        Global Revenue
-                      </div>
+                      <div className="stat-value text-info">$2.8M</div>
+                      <div className="stat-label">Global Revenue</div>
                     </div>
                   </div>
                 </div>
@@ -322,38 +319,35 @@ const GeographicAnalytics = () => {
           <div className="col-md-4">
             <div className="time-zone-indicator">
               <div className="timezone-header mb-3">
-                <h6 className="fw-semibold text-white mb-0">
+                <h6 className="fw-semibold text-dark mb-0">
                   🕐 Active Time Zones
                 </h6>
               </div>
               <div className="timezone-list">
                 <div className="timezone-item">
                   <span className="timezone-dot active"></span>
-                  <span className="timezone-name text-white">Americas</span>
-                  <span className="timezone-time text-white-50">
+                  <span className="timezone-name">Americas</span>
+                  <span className="timezone-time">
                     {new Date().toLocaleTimeString("en-US", {
                       timeZone: "America/New_York",
-                      hour12: false,
                     })}
                   </span>
                 </div>
                 <div className="timezone-item">
                   <span className="timezone-dot active"></span>
-                  <span className="timezone-name text-white">Europe</span>
-                  <span className="timezone-time text-white-50">
+                  <span className="timezone-name">Europe</span>
+                  <span className="timezone-time">
                     {new Date().toLocaleTimeString("en-US", {
                       timeZone: "Europe/London",
-                      hour12: false,
                     })}
                   </span>
                 </div>
                 <div className="timezone-item">
                   <span className="timezone-dot active"></span>
-                  <span className="timezone-name text-white">Asia</span>
-                  <span className="timezone-time text-white-50">
+                  <span className="timezone-name">Asia</span>
+                  <span className="timezone-time">
                     {new Date().toLocaleTimeString("en-US", {
                       timeZone: "Asia/Tokyo",
-                      hour12: false,
                     })}
                   </span>
                 </div>
@@ -378,7 +372,7 @@ const GeographicAnalytics = () => {
               <div className="d-flex justify-content-between align-items-center">
                 <h5 className="mb-0 d-flex align-items-center">
                   <span className="me-2">🌍</span>
-                  Geographic Analytics
+                  Geographic Sales Analytics
                 </h5>
                 <div className="badge bg-white text-dark px-3 py-2 rounded-pill">
                   Last 30 Days
@@ -386,7 +380,7 @@ const GeographicAnalytics = () => {
               </div>
             </div>
             <div className="card-body p-4">
-              <div style={{ height: "300px", position: "relative" }}>
+              <div style={{ height: "300px" }}>
                 <Bar data={salesByRegion} options={regionOptions} />
               </div>
               <div className="mt-4 pt-3 border-top">
@@ -426,7 +420,7 @@ const GeographicAnalytics = () => {
               <h5 className="mb-0">Time Zone Activity</h5>
             </div>
             <div className="card-body">
-              <div style={{ height: "200px", position: "relative" }}>
+              <div style={{ height: "200px" }}>
                 <Scatter data={timeZoneActivity} options={scatterOptions} />
               </div>
               <div className="mt-3 pt-3 border-top">
@@ -470,7 +464,7 @@ const GeographicAnalytics = () => {
                   <tbody>
                     {topCities.map((city, index) => (
                       <tr
-                        key={`${city.city}-${index}`}
+                        key={city.city}
                         className={
                           index < 3 ? "table-warning bg-opacity-25" : ""
                         }
@@ -527,6 +521,108 @@ const GeographicAnalytics = () => {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .geographic-analytics {
+          padding: 1rem;
+        }
+
+        .spinning-globe {
+          animation: spin 3s linear infinite;
+          font-size: 2rem;
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .stat-item {
+          text-align: center;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.7);
+          border-radius: 12px;
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+          background: rgba(255, 255, 255, 1);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          line-height: 1;
+        }
+
+        .stat-label {
+          font-size: 0.8rem;
+          color: #6c757d;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .timezone-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 0;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .timezone-item:last-child {
+          border-bottom: none;
+        }
+
+        .timezone-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #28a745;
+          animation: pulse 2s infinite;
+        }
+
+        .timezone-name {
+          font-weight: 600;
+          color: #374151;
+          min-width: 70px;
+        }
+
+        .timezone-time {
+          font-size: 0.85rem;
+          color: #6b7280;
+          font-family: monospace;
+        }
+
+        @keyframes pulse {
+          0% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+
+        .card {
+          transition: all 0.3s ease;
+        }
+
+        .card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+      `}</style>
     </div>
   );
 };

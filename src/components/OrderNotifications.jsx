@@ -14,8 +14,8 @@ const OrderNotifications = () => {
 
         const response = await fetch("http://localhost:3001/api/orders", {
           headers: {
-            "Authorization": `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
@@ -25,14 +25,16 @@ const OrderNotifications = () => {
           // Check if there are new orders
           if (lastOrderCount > 0 && currentOrderCount > lastOrderCount) {
             const newOrdersCount = currentOrderCount - lastOrderCount;
-            
+
             // Show notification for new orders
             toast.info(
               <div className="d-flex align-items-center">
                 <FaShoppingCart className="me-2 text-primary" />
                 <div>
                   <div className="fw-bold">New Order Alert!</div>
-                  <div className="small">{newOrdersCount} new order(s) received</div>
+                  <div className="small">
+                    {newOrdersCount} new order(s) received
+                  </div>
                 </div>
               </div>,
               {

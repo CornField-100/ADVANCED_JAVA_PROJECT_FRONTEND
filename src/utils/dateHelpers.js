@@ -17,21 +17,21 @@ export const safeParseDate = (dateInput) => {
   }
 
   // If it's a number (timestamp)
-  if (typeof dateInput === 'number') {
+  if (typeof dateInput === "number") {
     return new Date(dateInput);
   }
 
   // If it's a string
-  if (typeof dateInput === 'string') {
+  if (typeof dateInput === "string") {
     // Try parseISO first (for ISO format strings)
-    if (dateInput.includes('T') || dateInput.includes('-')) {
+    if (dateInput.includes("T") || dateInput.includes("-")) {
       try {
         return parseISO(dateInput);
       } catch (error) {
-        console.warn('Failed to parse ISO date:', dateInput);
+        console.warn("Failed to parse ISO date:", dateInput);
       }
     }
-    
+
     // Fallback to new Date()
     const date = new Date(dateInput);
     if (!isNaN(date.getTime())) {
@@ -40,7 +40,7 @@ export const safeParseDate = (dateInput) => {
   }
 
   // Ultimate fallback
-  console.warn('Could not parse date:', dateInput, 'using current date');
+  console.warn("Could not parse date:", dateInput, "using current date");
   return new Date();
 };
 
@@ -55,8 +55,8 @@ export const safeFormatDate = (dateInput, formatString = "MMM dd, yyyy") => {
     const date = safeParseDate(dateInput);
     return format(date, formatString);
   } catch (error) {
-    console.error('Error formatting date:', dateInput, error);
-    return 'Invalid Date';
+    console.error("Error formatting date:", dateInput, error);
+    return "Invalid Date";
   }
 };
 
@@ -90,17 +90,17 @@ export const getRelativeTime = (dateInput) => {
 
     if (diffInHours < 1) {
       const minutes = Math.floor(diffInMs / (1000 * 60));
-      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+      return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
     } else if (diffInHours < 24) {
       const hours = Math.floor(diffInHours);
-      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+      return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
     } else if (diffInDays < 7) {
       const days = Math.floor(diffInDays);
-      return `${days} day${days !== 1 ? 's' : ''} ago`;
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
     } else {
       return safeFormatDate(date, "MMM dd, yyyy");
     }
   } catch (error) {
-    return 'Unknown time';
+    return "Unknown time";
   }
 };
