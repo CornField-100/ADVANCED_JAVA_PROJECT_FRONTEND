@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { toast } from "react-toastify";
+import { getProductImage, getBrandColors } from "../utils/brandImages";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -149,16 +150,48 @@ const ProductDetail = () => {
   if (error) return <p>Error: {error}</p>;
   if (!product) return <p>No product found</p>;
 
+  // Get brand-specific image and colors
+  const productImage = getProductImage(product);
+  const brandColors = getBrandColors(product.brand);
+
   return (
     <div className="container my-5">
-      <div className="card shadow-lg border-0">
+      <div
+        className="card shadow-lg border-0"
+        style={{ border: `3px solid ${brandColors.primary}20` }}
+      >
         <div className="row g-0">
-          <div className="col-md-6 text-center p-4 bg-light rounded-start">
+          <div className="col-md-6 text-center p-4 bg-light rounded-start position-relative">
+            {/* Brand badge */}
+            {product.brand && (
+              <div className="position-absolute top-0 start-0 m-3">
+                <span
+                  className="badge text-white px-3 py-2"
+                  style={{
+                    backgroundColor: brandColors.primary,
+                    borderRadius: "8px",
+                    fontSize: "0.9rem",
+                    fontWeight: "600",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  {product.brand}
+                </span>
+              </div>
+            )}
+
             <img
-              src={product.imageUrl || "https://via.placeholder.com/400"}
-              alt={product.Model || "Product"}
+              src={productImage}
+              alt={`${product.brand ? product.brand + " " : ""}${
+                product.Model || product.model || "Product"
+              }`}
               className="img-fluid rounded"
               style={{ maxHeight: "400px", objectFit: "contain" }}
+              onError={(e) => {
+                // Fallback to placeholder if image fails to load
+                e.target.src = "https://via.placeholder.com/400";
+              }}
             />
           </div>
           <div className="col-md-6 p-4">

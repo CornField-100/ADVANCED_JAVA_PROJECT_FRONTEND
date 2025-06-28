@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useCart } from "../contexts/CartContext";
 import { toast } from "react-toastify";
 import { isAdmin } from "../utils/auth";
+import { getProductImage, getBrandColors } from "../utils/brandImages";
 import productImgPlaceholder from "../assets/image.png";
 
 const CardComponent = ({
@@ -86,27 +87,64 @@ const CardComponent = ({
   };
 
   const productStatus = getProductStatus();
-  const imageSrc =
-    imageUrl && imageUrl.trim() !== "" ? imageUrl : productImgPlaceholder;
+
+  // Get brand-specific image or fallback to product image or placeholder
+  const imageSrc = getProductImage({
+    imageUrl,
+    brand,
+    Model: title,
+    model: title,
+  });
+
+  // Get brand-specific colors for styling
+  const brandColors = getBrandColors(brand);
 
   return (
     <article className="col">
       <div
         className="card shadow-sm h-100 border-0 rounded-3 card-hover-effect"
-        style={{ backgroundColor: "#ffffff", borderRadius: "12px" }}
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: "12px",
+          border: `2px solid ${brandColors.primary}10`, // Very subtle brand color border
+          transition: "all 0.3s ease",
+        }}
       >
         <div
           className="position-relative overflow-hidden"
           style={{ borderRadius: "12px 12px 0 0" }}
         >
+          {/* Brand indicator */}
+          {brand && (
+            <div className="position-absolute top-0 start-0 m-3">
+              <span
+                className="badge text-white px-2 py-1"
+                style={{
+                  backgroundColor: brandColors.primary,
+                  borderRadius: "6px",
+                  fontSize: "0.7rem",
+                  fontWeight: "600",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                }}
+              >
+                {brand}
+              </span>
+            </div>
+          )}
+
           <img
             src={imageSrc}
             className="card-img-top"
-            alt={`${title} image`}
+            alt={`${brand ? brand + " " : ""}${title} image`}
             style={{
               height: "200px",
               objectFit: "cover",
               transition: "transform 0.3s ease",
+            }}
+            onError={(e) => {
+              // Fallback to placeholder if brand image fails to load
+              e.target.src = productImgPlaceholder;
             }}
           />
 
