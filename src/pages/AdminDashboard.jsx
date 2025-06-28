@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { isAdmin, getCurrentUser } from "../utils/auth";
 import { fetchProducts } from "../utils/fetchProduts";
 import OrderNotifications from "../components/OrderNotifications";
+import UserStatsWidget from "../components/UserStatsWidget";
 import {
   FaUsers,
   FaBox,
@@ -232,7 +233,7 @@ const AdminDashboard = () => {
 
       {/* Products Management */}
       <div className="row">
-        <div className="col-12">
+        <div className="col-md-8">
           <div className="card border-0 shadow-sm">
             <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">Product Management</h5>
@@ -363,6 +364,11 @@ const AdminDashboard = () => {
               )}
             </div>
           </div>
+        </div>
+
+        {/* User Management Widget */}
+        <div className="col-md-4">
+          <UserStatsWidget />
         </div>
       </div>
     </div>

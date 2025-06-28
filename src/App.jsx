@@ -15,6 +15,7 @@ import ProductDetail from "./pages/ProductDetail";
 import LandingPage from "./pages/LandingPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import DebugPage from "./pages/DebugPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -157,6 +158,16 @@ const App = () => {
                 <AdminOrdersPage />
               </ProtectedRoute>
             </main>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <div style={{ paddingTop: "5rem" }}>
+              <ProtectedRoute adminOnly={true}>
+                <AdminUsersPage />
+              </ProtectedRoute>
+            </div>
           }
         />
 

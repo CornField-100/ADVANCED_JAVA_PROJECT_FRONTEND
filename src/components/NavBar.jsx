@@ -11,6 +11,7 @@ import {
   FaUserPlus,
   FaTachometerAlt,
   FaCrown,
+  FaUsers,
 } from "react-icons/fa";
 
 const NavBar = () => {
@@ -116,6 +117,7 @@ const NavBar = () => {
                     <FaTachometerAlt className="me-1" /> Admin Dashboard
                   </Link>
                 </li>
+
                 <li className="nav-item">
                   <Link className="nav-link" to="/create-product">
                     <FaPlusCircle className="me-1" /> Add Product
