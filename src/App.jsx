@@ -1,33 +1,89 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { Suspense, lazy } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
-// Pages
-import CreateProduct from "./pages/CreateProduct";
-import HomePage from "./pages/HomePage";
-import LogInPage from "./pages/LogInPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import SignUpPage from "./pages/SignUpPage";
-import EditProductPage from "./pages/EditProduct";
-import SearchProductPage from "./pages/SearchProductPage";
-import CartPage from "./pages/CartPage";
-import ProductDetail from "./pages/ProductDetail";
-import LandingPage from "./pages/LandingPage";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminOrdersPage from "./pages/AdminOrdersPage";
-import AdminUsersPage from "./pages/AdminUsersPage";
-import AnalyticsDashboard from "./pages/AnalyticsDashboard";
-import DebugPage from "./pages/DebugPage";
-import CheckoutPage from "./pages/CheckoutPage";
-import OrderConfirmation from "./pages/OrderConfirmation";
-
-// Components
+// Core Components (loaded immediately)
 import NavBar from "./components/NavBar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PerformanceMonitor from "./components/PerformanceMonitor";
+
+// Lazy-loaded Pages (split into chunks)
+// Core pages - immediate load
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const HomePage = lazy(() => import("./pages/HomePage"));
+const LogInPage = lazy(() => import("./pages/LogInPage"));
+const SignUpPage = lazy(() => import("./pages/SignUpPage"));
+
+// Shopping pages - separate chunk
+const SearchProductPage = lazy(() => import("./pages/SearchProductPage"));
+const CartPage = lazy(() => import("./pages/CartPage"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
+const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"));
+
+// Admin pages - separate chunk (heavy components)
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminOrdersPage = lazy(() => import("./pages/AdminOrdersPage"));
+const AdminUsersPage = lazy(() => import("./pages/AdminUsersPage"));
+const AnalyticsDashboard = lazy(() => import("./pages/AnalyticsDashboard"));
+
+// Product management - separate chunk
+const CreateProduct = lazy(() => import("./pages/CreateProduct"));
+const EditProductPage = lazy(() => import("./pages/EditProduct"));
+
+// Utility pages
+const DebugPage = lazy(() => import("./pages/DebugPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+
+// Loading components for different sections
+const LoadingSpinner = ({ message = "Loading..." }) => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '60vh',
+    gap: '1rem'
+  }}>
+    <div style={{
+      width: '50px',
+      height: '50px',
+      border: '4px solid #f3f4f6',
+      borderTop: '4px solid #667eea',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite'
+    }}></div>
+    <p style={{
+      color: '#6b7280',
+      fontSize: '1rem',
+      fontWeight: '500'
+    }}>{message}</p>
+    <style>{`
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `}</style>
+  </div>
+);
+
+const AdminLoadingSpinner = () => (
+  <LoadingSpinner message="Loading admin dashboard..." />
+);
+
+const ShoppingLoadingSpinner = () => (
+  <LoadingSpinner message="Loading shopping experience..." />
+);
+
+const ProductLoadingSpinner = () => (
+  <LoadingSpinner message="Loading product management..." />
+);
 
 const App = () => {
   return (
     <Router>
+      <PerformanceMonitor />
       <NavBar />
       <Routes>
         {/* Full-width routes (no container) */}
@@ -36,19 +92,30 @@ const App = () => {
           element={
             <div style={{ paddingTop: "5rem" }}>
               <ProtectedRoute adminOnly={true}>
-                <AnalyticsDashboard />
+                <Suspense fallback={<AdminLoadingSpinner />}>
+                  <AnalyticsDashboard />
+                </Suspense>
               </ProtectedRoute>
             </div>
           }
         />
 
         {/* Regular containerized routes */}
-        <Route path="/" element={<LandingPage />} />
+        <Route 
+          path="/" 
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <LandingPage />
+            </Suspense>
+          } 
+        />
         <Route
           path="/products"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <HomePage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <HomePage />
+              </Suspense>
             </main>
           }
         />
@@ -56,7 +123,9 @@ const App = () => {
           path="/login"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <LogInPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <LogInPage />
+              </Suspense>
             </main>
           }
         />
@@ -64,7 +133,9 @@ const App = () => {
           path="/signup"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <SignUpPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <SignUpPage />
+              </Suspense>
             </main>
           }
         />
@@ -72,7 +143,9 @@ const App = () => {
           path="/search"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <SearchProductPage />
+              <Suspense fallback={<ShoppingLoadingSpinner />}>
+                <SearchProductPage />
+              </Suspense>
             </main>
           }
         />
@@ -80,7 +153,9 @@ const App = () => {
           path="/cart"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <CartPage />
+              <Suspense fallback={<ShoppingLoadingSpinner />}>
+                <CartPage />
+              </Suspense>
             </main>
           }
         />
@@ -88,7 +163,9 @@ const App = () => {
           path="/checkout"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <CheckoutPage />
+              <Suspense fallback={<ShoppingLoadingSpinner />}>
+                <CheckoutPage />
+              </Suspense>
             </main>
           }
         />
@@ -96,7 +173,9 @@ const App = () => {
           path="/order-confirmation"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <OrderConfirmation />
+              <Suspense fallback={<ShoppingLoadingSpinner />}>
+                <OrderConfirmation />
+              </Suspense>
             </main>
           }
         />
@@ -104,7 +183,9 @@ const App = () => {
           path="/products/:id"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <ProductDetail />
+              <Suspense fallback={<ShoppingLoadingSpinner />}>
+                <ProductDetail />
+              </Suspense>
             </main>
           }
         />
@@ -112,7 +193,9 @@ const App = () => {
           path="/debug"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <DebugPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <DebugPage />
+              </Suspense>
             </main>
           }
         />
@@ -123,7 +206,9 @@ const App = () => {
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
               <ProtectedRoute adminOnly={true}>
-                <CreateProduct />
+                <Suspense fallback={<ProductLoadingSpinner />}>
+                  <CreateProduct />
+                </Suspense>
               </ProtectedRoute>
             </main>
           }
@@ -133,7 +218,9 @@ const App = () => {
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
               <ProtectedRoute adminOnly={true}>
-                <EditProductPage />
+                <Suspense fallback={<ProductLoadingSpinner />}>
+                  <EditProductPage />
+                </Suspense>
               </ProtectedRoute>
             </main>
           }
@@ -145,7 +232,9 @@ const App = () => {
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
               <ProtectedRoute adminOnly={true}>
-                <AdminDashboard />
+                <Suspense fallback={<AdminLoadingSpinner />}>
+                  <AdminDashboard />
+                </Suspense>
               </ProtectedRoute>
             </main>
           }
@@ -155,7 +244,9 @@ const App = () => {
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
               <ProtectedRoute adminOnly={true}>
-                <AdminOrdersPage />
+                <Suspense fallback={<AdminLoadingSpinner />}>
+                  <AdminOrdersPage />
+                </Suspense>
               </ProtectedRoute>
             </main>
           }
@@ -165,13 +256,22 @@ const App = () => {
           element={
             <div style={{ paddingTop: "5rem" }}>
               <ProtectedRoute adminOnly={true}>
-                <AdminUsersPage />
+                <Suspense fallback={<AdminLoadingSpinner />}>
+                  <AdminUsersPage />
+                </Suspense>
               </ProtectedRoute>
             </div>
           }
         />
 
-        <Route path="*" element={<NotFoundPage />} />
+        <Route 
+          path="*" 
+          element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <NotFoundPage />
+            </Suspense>
+          } 
+        />
       </Routes>
       <ToastContainer
         position="top-right"

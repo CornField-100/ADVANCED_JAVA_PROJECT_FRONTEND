@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { isAdmin, getCurrentUser } from "../utils/auth";
+import { BASE_URL } from "../utils/api";
+import { testBackendConnection } from "../utils/backendTest";
 import { toast } from "react-toastify";
 import { format, subDays } from "date-fns";
 import {
@@ -39,8 +41,14 @@ const AdminOrdersPage = () => {
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [lastOrderCount, setLastOrderCount] = useState(0);
+  const [backendStatus, setBackendStatus] = useState({
+    connected: false,
+    testing: false,
+    lastChecked: null,
+    error: null
+  });
 
-  // Check admin access
+  // Check admin access and initialize page
   useEffect(() => {
     if (!isAdmin()) {
       navigate("/login");
@@ -48,92 +56,351 @@ const AdminOrdersPage = () => {
     }
   }, [navigate]);
 
-  // Load orders data
+  // Test backend connectivity first, then load orders
   useEffect(() => {
-    const loadOrders = async () => {
+    const initializeOrdersPage = async () => {
       try {
         setLoading(true);
-
-        // Fetch orders from backend
-        const token = localStorage.getItem("token");
-
-        const response = await fetch("http://localhost:3001/api/orders", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const ordersData = await response.json();
-
-          // Transform backend data to match frontend format
-          const formattedOrders = ordersData.map((order) => ({
-            id: order.orderId || order._id,
-            customer: {
-              name: `${order.shippingInfo?.firstName || "Unknown"} ${
-                order.shippingInfo?.lastName || "User"
-              }`,
-              email: order.shippingInfo?.email || "no-email@example.com",
-              id: order.userId || order.customerId || "unknown",
-            },
-            items: (order.items || []).map((item) => ({
-              name: item.title || item.name || "Unknown Item",
-              quantity: item.quantity || 1,
-              price: parseFloat(item.price) || 0,
-            })),
-            total: parseFloat(order.total) || 0,
-            status: order.status || "pending",
-            paymentMethod: order.paymentMethod || "card",
-            paymentStatus: order.paymentStatus || "paid",
-            date:
-              order.orderDate || order.createdAt || new Date().toISOString(),
-            shippingAddress: order.shippingInfo
-              ? `${order.shippingInfo.address || ""}, ${
-                  order.shippingInfo.city || ""
-                }, ${order.shippingInfo.state || ""} ${
-                  order.shippingInfo.zipCode || ""
-                }`.trim()
-              : "No address provided",
-            trackingNumber: order.trackingNumber || null,
-            notes: order.orderNotes || order.notes || "",
-          }));
-
-          setOrders(formattedOrders);
-
-          if (formattedOrders.length > 0) {
-            toast.success(
-              `✅ Loaded ${formattedOrders.length} orders from database`
-            );
-          } else {
-            toast.info(
-              "📦 No orders found. Place an order through checkout to see it here!"
-            );
-          }
-        } else {
-          throw new Error(
-            `Backend responded with ${response.status}: ${response.statusText}`
-          );
-        }
-      } catch (error) {
-        if (error.message.includes("fetch")) {
+        setBackendStatus(prev => ({ ...prev, testing: true }));
+        
+        // First, test backend connectivity
+        console.log("🔍 Testing backend connection for orders...");
+        const connectionTest = await testBackendConnection();
+        
+        if (!connectionTest.success) {
+          setBackendStatus({
+            connected: false,
+            testing: false,
+            lastChecked: new Date(),
+            error: connectionTest.error
+          });
+          
           toast.error(
-            "Cannot connect to backend server. Please check if backend is running on port 3001."
+            <div>
+              <div className="fw-bold">🚫 Backend Unreachable</div>
+              <div className="small">Error: {connectionTest.error}</div>
+              <div className="small mt-1">
+                <strong>Troubleshooting:</strong>
+                <br />• Check if backend server is running
+                <br />• Verify BASE_URL: {BASE_URL}
+                <br />• Check CORS configuration
+                <br />• Check network connectivity
+              </div>
+            </div>
           );
-        } else {
-          toast.error(`Backend error: ${error.message}`);
+          
+          setOrders([]);
+          setLoading(false);
+          return;
         }
 
-        setOrders([]);
-      } finally {
+        // Backend is reachable, now load orders
+        console.log("✅ Backend connection successful, loading orders...");
+        setBackendStatus({
+          connected: true,
+          testing: false,
+          lastChecked: new Date(),
+          error: null
+        });
+        
+        await loadOrders();
+        
+      } catch (error) {
+        console.error("❌ Orders page initialization failed:", error);
+        setBackendStatus({
+          connected: false,
+          testing: false,
+          lastChecked: new Date(),
+          error: error.message
+        });
+        
+        toast.error(
+          <div>
+            <div className="fw-bold">❌ Initialization Failed</div>
+            <div className="small">{error.message}</div>
+          </div>
+        );
+        
         setLoading(false);
       }
     };
 
-    loadOrders();
-  }, []);
+    initializeOrdersPage();
+  }, [navigate]);
 
-  // 🔥 NEW: Refresh orders function
+  // Load orders data with enhanced error handling
+  const loadOrders = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        toast.error("❌ No authentication token found");
+        navigate("/login");
+        return;
+      }
+
+      console.log("📡 Fetching orders from:", `${BASE_URL}/api/orders`);
+      
+      const response = await fetch(`${BASE_URL}/api/orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("📡 Orders API response status:", response.status);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("📊 Orders backend response received:", responseData);
+        
+        // Handle different response formats
+        let ordersArray;
+        
+        if (Array.isArray(responseData)) {
+          // Direct array format
+          ordersArray = responseData;
+          console.log("📊 Orders data received (array format):", ordersArray.length, "orders");
+        } else if (responseData && Array.isArray(responseData.orders)) {
+          // Object with orders array format
+          ordersArray = responseData.orders;
+          console.log("📊 Orders data received (object format):", ordersArray.length, "orders");
+        } else {
+          console.error("❌ Backend returned invalid orders format:", responseData);
+          throw new Error(`Backend returned invalid data format. Expected array or object with orders property but got: ${JSON.stringify(responseData)}`);
+        }
+
+        // Transform backend data to match frontend format
+        const formattedOrders = ordersArray.map((order) => ({
+          id: order.orderId || order._id || order.id,
+          customer: {
+            name: `${order.shippingInfo?.firstName || order.firstName || "Unknown"} ${
+              order.shippingInfo?.lastName || order.lastName || "User"
+            }`,
+            email: order.shippingInfo?.email || order.email || order.customerEmail || "no-email@example.com",
+            id: order.userId || order.customerId || order.user || "unknown",
+          },
+          items: (order.items || order.orderItems || []).map((item) => ({
+            name: item.title || item.name || item.productName || "Unknown Item",
+            quantity: parseInt(item.quantity) || 1,
+            price: parseFloat(item.price || item.unitPrice) || 0,
+            id: item._id || item.id || item.productId
+          })),
+          total: parseFloat(order.total || order.totalAmount || order.orderTotal) || 0,
+          status: order.status || order.orderStatus || "pending",
+          paymentMethod: order.paymentMethod || order.payment?.method || "card",
+          paymentStatus: order.paymentStatus || order.payment?.status || "paid",
+          date: order.orderDate || order.createdAt || order.date || new Date().toISOString(),
+          shippingAddress: order.shippingInfo
+            ? `${order.shippingInfo.address || ""}, ${
+                order.shippingInfo.city || ""
+              }, ${order.shippingInfo.state || ""} ${
+                order.shippingInfo.zipCode || order.shippingInfo.postalCode || ""
+              }`.trim()
+            : order.shippingAddress || "No address provided",
+          trackingNumber: order.trackingNumber || order.tracking || null,
+          notes: order.orderNotes || order.notes || order.specialInstructions || "",
+          // Enhanced order data
+          deliveryDate: order.deliveryDate || order.estimatedDelivery || null,
+          orderSource: order.orderSource || "web",
+          discount: parseFloat(order.discount || order.discountAmount) || 0,
+          tax: parseFloat(order.tax || order.taxAmount) || 0,
+          shipping: parseFloat(order.shipping || order.shippingCost) || 0
+        }));
+
+        setOrders(formattedOrders);
+        setLastOrderCount(formattedOrders.length);
+        
+        toast.success(
+          <div>
+            <div className="fw-bold">✅ Orders Loaded</div>
+            <div className="small">
+              Loaded {formattedOrders.length} orders successfully
+            </div>
+          </div>
+        );
+        
+      } else if (response.status === 401) {
+        console.log("❌ Authentication failed - redirecting to login");
+        toast.error("❌ Authentication failed - Please login again");
+        localStorage.removeItem("token");
+        navigate("/login");
+      } else if (response.status === 403) {
+        console.log("❌ Access forbidden - insufficient permissions");
+        toast.error("❌ Access denied - Admin privileges required");
+        navigate("/");
+      } else if (response.status === 404) {
+        console.log("❌ Orders API endpoint not found");
+        toast.error(
+          <div>
+            <div className="fw-bold">❌ API Endpoint Missing</div>
+            <div className="small">The backend server is running but missing the /api/orders endpoint</div>
+            <div className="small mt-1">
+              <strong>Backend URL:</strong> {BASE_URL}
+              <br />
+              <strong>Full endpoint:</strong> {BASE_URL}/api/orders
+              <br />
+              <strong>Status:</strong> 404 Not Found
+            </div>
+            <div className="small mt-2">
+              <strong>Solution:</strong> Add the orders endpoint to your backend server
+            </div>
+          </div>
+        );
+        setOrders([]);
+      } else {
+        const errorText = await response.text();
+        console.log("❌ Orders API error:", response.status, errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
+    } catch (error) {
+      console.error("❌ Error loading orders:", error);
+      
+      // Provide specific error messages based on error type
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        toast.error(
+          <div>
+            <div className="fw-bold">🚫 Network Connection Failed</div>
+            <div className="small">Cannot reach backend server</div>
+            <div className="small mt-1">
+              <strong>Check:</strong>
+              <br />• Backend server is running
+              <br />• URL: {BASE_URL}
+              <br />• Network connectivity
+              <br />• CORS configuration
+            </div>
+          </div>
+        );
+      } else {
+        toast.error(
+          <div>
+            <div className="fw-bold">❌ Error Loading Orders</div>
+            <div className="small">{error.message}</div>
+          </div>
+        );
+      }
+      
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Enhanced refresh with connection testing and loading feedback
+  const refreshOrders = async () => {
+    const refreshToast = toast.loading("🔄 Testing connection and synchronizing order data...");
+    
+    try {
+      // First test backend connectivity
+      const connectionTest = await testBackendConnection();
+      
+      if (!connectionTest.success) {
+        toast.update(refreshToast, {
+          render: (
+            <div>
+              <div className="fw-bold">🚫 Backend Unreachable</div>
+              <div className="small">Error: {connectionTest.error}</div>
+            </div>
+          ),
+          type: "error",
+          isLoading: false,
+          autoClose: 5000,
+        });
+        
+        setBackendStatus({
+          connected: false,
+          testing: false,
+          lastChecked: new Date(),
+          error: connectionTest.error
+        });
+        return;
+      }
+
+      // Backend is reachable, update status
+      setBackendStatus({
+        connected: true,
+        testing: false,
+        lastChecked: new Date(),
+        error: null
+      });
+
+      // Now fetch orders
+      const token = localStorage.getItem("token");
+      console.log("🔄 Refreshing orders data...");
+      
+      const response = await fetch(`${BASE_URL}/api/orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("🔄 Refresh response data:", responseData);
+        
+        // Handle different response formats
+        let ordersArray;
+        if (Array.isArray(responseData)) {
+          ordersArray = responseData;
+        } else if (responseData && Array.isArray(responseData.orders)) {
+          ordersArray = responseData.orders;
+        } else {
+          throw new Error("Invalid response format");
+        }
+        
+        const formattedOrders = ordersArray.map((order) => ({
+          id: order.orderId || order._id || order.id,
+          customer: {
+            name: `${order.shippingInfo?.firstName || order.firstName || "Unknown"} ${
+              order.shippingInfo?.lastName || order.lastName || "User"
+            }`,
+            email: order.shippingInfo?.email || order.email || order.customerEmail || "no-email@example.com",
+            id: order.userId || order.customerId || order.user || "unknown",
+          },
+          items: (order.items || order.orderItems || []).map((item) => ({
+            name: item.title || item.name || item.productName || "Unknown Item",
+            quantity: parseInt(item.quantity) || 1,
+            price: parseFloat(item.price || item.unitPrice) || 0,
+          })),
+          total: parseFloat(order.total || order.totalAmount || order.orderTotal) || 0,
+          status: order.status || order.orderStatus || "pending",
+          paymentMethod: order.paymentMethod || order.payment?.method || "card",
+          paymentStatus: order.paymentStatus || order.payment?.status || "paid",
+          date: order.orderDate || order.createdAt || order.date || new Date().toISOString(),
+          shippingAddress: order.shippingInfo
+            ? `${order.shippingInfo.address || ""}, ${
+                order.shippingInfo.city || ""
+              }, ${order.shippingInfo.state || ""} ${
+                order.shippingInfo.zipCode || order.shippingInfo.postalCode || ""
+              }`.trim()
+            : order.shippingAddress || "No address provided",
+          trackingNumber: order.trackingNumber || order.tracking || null,
+          notes: order.orderNotes || order.notes || order.specialInstructions || "",
+        }));
+
+        setOrders(formattedOrders);
+        toast.dismiss(refreshToast);
+        toast.success(
+          <div>
+            <div className="fw-bold">✅ Data Synchronized</div>
+            <div className="small">Updated {formattedOrders.length} order records</div>
+          </div>
+        );
+      } else {
+        throw new Error("Refresh failed");
+      }
+    } catch (error) {
+      toast.dismiss(refreshToast);
+      toast.error(
+        <div>
+          <div className="fw-bold">❌ Sync Failed</div>
+          <div className="small">Using cached data</div>
+        </div>
+      );
+    }
+  };
   // 🔥 NEW: View order details
   const viewOrderDetails = (order) => {
     let formattedDate;
@@ -170,60 +437,6 @@ ${order.notes ? `📝 Notes: ${order.notes}` : ""}
     alert(orderDetails);
   };
 
-  // 🔥 NEW: Refresh orders function
-  const refreshOrders = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3001/api/orders", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const ordersData = await response.json();
-        const formattedOrders = ordersData.map((order) => ({
-          id: order.orderId || order._id,
-          customer: {
-            name: `${order.shippingInfo?.firstName || "Unknown"} ${
-              order.shippingInfo?.lastName || "User"
-            }`,
-            email: order.shippingInfo?.email || "no-email@example.com",
-            id: order.userId || order.customerId || "unknown",
-          },
-          items: (order.items || []).map((item) => ({
-            name: item.title || item.name || "Unknown Item",
-            quantity: item.quantity || 1,
-            price: parseFloat(item.price) || 0,
-          })),
-          total: parseFloat(order.total) || 0,
-          status: order.status || "pending",
-          paymentMethod: order.paymentMethod || "card",
-          paymentStatus: order.paymentStatus || "paid",
-          date: order.orderDate || order.createdAt || new Date().toISOString(),
-          shippingAddress: order.shippingInfo
-            ? `${order.shippingInfo.address || ""}, ${
-                order.shippingInfo.city || ""
-              }, ${order.shippingInfo.state || ""} ${
-                order.shippingInfo.zipCode || ""
-              }`.trim()
-            : "No address provided",
-          trackingNumber: order.trackingNumber || null,
-          notes: order.orderNotes || order.notes || "",
-        }));
-
-        setOrders(formattedOrders);
-        toast.success("Orders refreshed successfully!");
-      } else {
-        toast.error("Failed to refresh orders");
-      }
-    } catch (error) {
-      console.error("Error refreshing orders:", error);
-      toast.error("Failed to refresh orders");
-    }
-  };
-
   // Auto-refresh orders every 30 seconds for real-time updates
   useEffect(() => {
     if (!orders.length) return; // Don't auto-refresh if no orders loaded yet
@@ -231,7 +444,7 @@ ${order.notes ? `📝 Notes: ${order.notes}` : ""}
     const interval = setInterval(async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:3001/api/orders", {
+        const response = await fetch(`${BASE_URL}/api/orders`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -371,10 +584,10 @@ ${order.notes ? `📝 Notes: ${order.notes}` : ""}
     try {
       const loadingToast = toast.loading("Updating order status...");
 
-      // 🔥 NEW: Update status in backend
+      // Update status in backend
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:3001/api/orders/${orderId}`,
+        `${BASE_URL}/api/orders/${orderId}`,
         {
           method: "PATCH",
           headers: {
@@ -451,10 +664,10 @@ ${order.notes ? `📝 Notes: ${order.notes}` : ""}
     try {
       const loadingToast = toast.loading("Deleting order...");
 
-      // 🔥 NEW: Delete from backend
+      // Delete from backend
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:3001/api/orders/${orderId}`,
+        `${BASE_URL}/api/orders/${orderId}`,
         {
           method: "DELETE",
           headers: {
@@ -621,11 +834,13 @@ ${order.notes ? `📝 Notes: ${order.notes}` : ""}
                   <div className="badge bg-white text-primary px-3 py-2 rounded-pill">
                     {orderStats.total} Total Orders
                   </div>
-                  <div className="badge bg-success text-white px-3 py-2 rounded-pill ms-2">
-                    ✅ Backend Connected
+                  <div className={`badge text-white px-3 py-2 rounded-pill ms-2 ${
+                    backendStatus.connected ? 'bg-success' : 'bg-danger'
+                  }`}>
+                    {backendStatus.connected ? '✅ Backend Connected' : '❌ Backend Offline'}
                   </div>
                   <div className="badge bg-info text-white px-3 py-2 rounded-pill ms-2">
-                    🔄 Auto-Refresh: 30s
+                    🌐 {BASE_URL.replace('http://', '').replace('https://', '')}
                   </div>
                 </div>
               </div>

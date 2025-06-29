@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { getCurrentUser, isAuthenticated } from "../utils/auth";
+import { BASE_URL } from "../utils/api";
 import { toast } from "react-toastify";
 import {
   FaCreditCard,
@@ -214,7 +215,7 @@ const CheckoutPage = () => {
 
       // 🔥 NEW: Send order to backend
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3001/api/orders", {
+      const response = await fetch(`${BASE_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
