@@ -460,7 +460,7 @@ const LoadingScreen = ({ onComplete }) => {
                 { icon: '⚡', label: 'Ultra Fast', color: '#f093fb' },
                 { icon: '🔒', label: 'Quantum Secure', color: '#4ade80' },
                 { icon: '🌐', label: 'Global Network', color: '#fbbf24' },
-                { icon: '🤖', label: 'Smart AI', color: '#8b5cf6' },
+                { icon: '👾', label: 'Smart AI', color: '#8b5cf6' },
                 { icon: '📱', label: 'Omnichannel', color: '#06b6d4' }
               ].map((feature, index) => (
                 <motion.div

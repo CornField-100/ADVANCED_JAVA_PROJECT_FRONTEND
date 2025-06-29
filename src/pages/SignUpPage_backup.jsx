@@ -15,19 +15,88 @@ const SignUpPage = () => {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [savedImageUrl, setSavedImageUrl] = useState("");
 
-  // Professional cartoon-style avatar images (only 2 profile pictures)
+  // Professional cartoonish profile images - working URLs
   const profileImages = [
     {
       id: 1,
-      url: "https://api.dicebear.com/7.x/avataaars/svg?seed=professional1&backgroundColor=b6e3f4&clothingColor=262e33&eyebrowType=default&eyeType=default&facialHairType=blank&hairColor=724133&hatColor=ff488e&mouthType=smile&skinColor=ae5d29&topType=shortHairShortWaved",
-      name: "Professional Manager"
+      url: "https://api.dicebear.com/8.x/lorelei/svg?seed=business1&backgroundColor=1e40af&hair=variant01&hairColor=brown&eyes=variant01&mouth=happy&size=150",
+      name: "Business Executive"
     },
     {
       id: 2,
-      url: "https://api.dicebear.com/7.x/avataaars/svg?seed=professional2&backgroundColor=c7d2fe&clothingColor=3c4858&eyebrowType=default&eyeType=default&facialHairType=blank&hairColor=2c1b18&mouthType=smile&skinColor=f8d25c&topType=shortHairShortFlat",
-      name: "Business Executive"
+      url: "https://api.dicebear.com/8.x/lorelei/svg?seed=manager2&backgroundColor=059669&hair=variant02&hairColor=black&eyes=variant02&mouth=smile&size=150",
+      name: "Team Manager"
+    },
+    {
+      id: 3,
+      url: "https://api.dicebear.com/8.x/lorelei/svg?seed=director3&backgroundColor=dc2626&hair=variant03&hairColor=blonde&eyes=variant03&mouth=serious&size=150",
+      name: "Creative Director"
+    },
+    {
+      id: 4,
+      url: "https://api.dicebear.com/8.x/lorelei/svg?seed=consultant4&backgroundColor=7c3aed&hair=variant04&hairColor=auburn&eyes=variant04&mouth=smile&size=150",
+      name: "Business Consultant"
+    },
+    {
+      id: 5,
+      url: "https://api.dicebear.com/8.x/lorelei/svg?seed=analyst5&backgroundColor=ea580c&hair=variant05&hairColor=red&eyes=variant05&mouth=neutral&size=150",
+      name: "Data Analyst"
+    },
+    {
+      id: 6,
+      url: "https://api.dicebear.com/8.x/lorelei/svg?seed=coordinator6&backgroundColor=0891b2&hair=variant06&hairColor=brown&eyes=variant06&mouth=happy&size=150",
+      name: "Project Coordinator"
+    },
+    {
+      id: 7,
+      url: "https://api.dicebear.com/8.x/adventurer/svg?seed=prof1&backgroundColor=4facfe&hair=short01&hairColor=brown&eyes=variant01&mouth=smile&size=150",
+      name: "Tech Professional"
+    },
+    {
+      id: 8,
+      url: "https://api.dicebear.com/8.x/adventurer/svg?seed=prof2&backgroundColor=00f2fe&hair=short02&hairColor=black&eyes=variant02&mouth=happy&size=150",
+      name: "Marketing Lead"
+    },
+    {
+      id: 9,
+      url: "https://api.dicebear.com/8.x/adventurer/svg?seed=prof3&backgroundColor=43e97b&hair=short03&hairColor=blonde&eyes=variant03&mouth=neutral&size=150",
+      name: "Operations Manager"
+    },
+    {
+      id: 10,
+      url: "https://api.dicebear.com/8.x/adventurer/svg?seed=prof4&backgroundColor=667eea&hair=short04&hairColor=red&eyes=variant04&mouth=smile&size=150",
+      name: "Sales Director"
+    },
+    {
+      id: 11,
+      url: "https://api.dicebear.com/8.x/adventurer/svg?seed=prof5&backgroundColor=764ba2&hair=short05&hairColor=brown&eyes=variant05&mouth=happy&size=150",
+      name: "HR Manager"
+    },
+    {
+      id: 12,
+      url: "https://api.dicebear.com/8.x/adventurer/svg?seed=prof6&backgroundColor=f093fb&hair=short06&hairColor=black&eyes=variant06&mouth=smile&size=150",
+      name: "Finance Lead"
+    },
+    {
+      id: 13,
+      url: "https://api.dicebear.com/8.x/shapes/svg?seed=geo1&backgroundColor=667eea&colors=4facfe,00f2fe,43e97b&size=150",
+      name: "Modern Blue"
+    },
+    {
+      id: 14,
+      url: "https://api.dicebear.com/8.x/shapes/svg?seed=geo2&backgroundColor=764ba2&colors=f093fb,f5576c,4facfe&size=150",
+      name: "Creative Purple"
+    },
+    {
+      id: 15,
+      url: "https://api.dicebear.com/8.x/shapes/svg?seed=geo3&backgroundColor=43e97b&colors=38f9d7,4facfe,00f2fe&size=150",
+      name: "Fresh Green"
+    },
+    {
+      id: 16,
+      url: "https://api.dicebear.com/8.x/shapes/svg?seed=geo4&backgroundColor=f093fb&colors=667eea,764ba2,43e97b&size=150",
+      name: "Vibrant Pink"
     }
   ];
 
@@ -39,10 +108,7 @@ const SignUpPage = () => {
   };
 
   const handleImageSelect = (imageUrl) => {
-    console.log("Avatar selected:", imageUrl);
     setFormData((prev) => ({ ...prev, imageUrl }));
-    // Store in localStorage as backup
-    localStorage.setItem("userImageUrl", imageUrl);
   };
 
   const fieldConfig = [
@@ -103,16 +169,25 @@ const SignUpPage = () => {
     }
 
     try {
-      console.log("SignUp - formData being sent:", formData);
-      console.log("SignUp - imageUrl being sent:", formData.imageUrl);
-      
+      // Generate default avatar if none selected
+      const finalImageUrl = formData.imageUrl || generateDefaultAvatar(
+        formData.firstName, 
+        formData.lastName, 
+        formData.email
+      );
+
+      const signupData = {
+        ...formData,
+        imageUrl: finalImageUrl
+      };
+
       const response = await fetch(`${BASE_URL}/api/users/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(signupData),
       });
 
       const serverData = await response.json();
@@ -121,16 +196,7 @@ const SignUpPage = () => {
         throw Error(serverData.message || "Signup failed");
       }
 
-      console.log("SignUp - Server response:", serverData);
-      console.log("SignUp successful:", serverData);
-      
-      // Store the imageUrl before clearing form
-      if (formData.imageUrl) {
-        setSavedImageUrl(formData.imageUrl);
-        localStorage.setItem("userImageUrl", formData.imageUrl);
-        console.log("Stored imageUrl in localStorage for immediate use:", formData.imageUrl);
-      }
-      
+      console.log("Signup successful:", serverData);
       setSuccess(true);
       setFormData({
         firstName: "",
@@ -182,30 +248,58 @@ const SignUpPage = () => {
               </label>
               
               {/* Preview Section */}
-              {formData.imageUrl && (
-                <div className="d-flex align-items-center mb-3 p-3 bg-light rounded-3">
-                  <div className="me-3">
-                    <img
-                      src={formData.imageUrl}
-                      alt="Selected Avatar"
-                      style={{
-                        width: "60px",
-                        height: "60px",
-                        borderRadius: "50%",
-                        border: "3px solid #007bff",
-                        background: "white"
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <h6 className="mb-1">Selected Avatar</h6>
-                    <small className="text-muted">Professional avatar selected</small>
-                  </div>
+              <div className="d-flex align-items-center mb-3 p-3 bg-light rounded-3">
+                <div className="me-3">
+                  <img
+                    src={
+                      formData.imageUrl || 
+                      generateDefaultAvatar(formData.firstName, formData.lastName, formData.email)
+                    }
+                    alt="Profile Preview"
+                    style={{
+                      width: "60px",
+                      height: "60px",
+                      borderRadius: "50%",
+                      border: "3px solid #007bff",
+                      background: "white"
+                    }}
+                  />
                 </div>
-              )}
+                <div>
+                  <h6 className="mb-1">Avatar Preview</h6>
+                  <small className="text-muted">
+                    {formData.imageUrl ? "Professional avatar selected" : "Auto-generated from your initials"}
+                  </small>
+                </div>
+              </div>
+
+              {/* Avatar Style Filter */}
+              <div className="avatar-filter mb-3">
+                <small className="text-muted d-block mb-2">Filter by style:</small>
+                <div className="d-flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${selectedAvatarStyle === "all" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setSelectedAvatarStyle("all")}
+                  >
+                    All Styles
+                  </button>
+                  {avatarStyles.map(style => (
+                    <button
+                      key={style.key}
+                      type="button"
+                      className={`btn btn-sm ${selectedAvatarStyle === style.key ? "btn-primary" : "btn-outline-primary"}`}
+                      onClick={() => setSelectedAvatarStyle(style.key)}
+                      title={style.description}
+                    >
+                      {style.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               <div className="profile-image-grid">
-                {profileImages.map((avatar) => (
+                {displayedAvatars.map((avatar) => (
                   <div
                     key={avatar.id}
                     className={`profile-image-option ${
@@ -218,10 +312,6 @@ const SignUpPage = () => {
                       src={avatar.url}
                       alt={avatar.name}
                       className="profile-image"
-                      onError={(e) => {
-                        console.log('Failed to load avatar:', avatar.url);
-                        e.target.style.display = 'none';
-                      }}
                     />
                     {formData.imageUrl === avatar.url && (
                       <div className="selection-indicator">
@@ -233,9 +323,25 @@ const SignUpPage = () => {
                     </div>
                   </div>
                 ))}
+                
+                {/* Add Random Option */}
+                <div
+                  className="profile-image-option random-option"
+                  onClick={() => {
+                    const randomAvatar = allAvatars[Math.floor(Math.random() * allAvatars.length)];
+                    handleImageSelect(randomAvatar.url);
+                  }}
+                  title="Get Random Professional Avatar"
+                >
+                  <div className="random-avatar-placeholder">
+                    <i className="fas fa-random" style={{ fontSize: '1.5rem', color: '#007bff' }}></i>
+                    <small style={{ fontSize: '0.7rem', marginTop: '4px' }}>Random</small>
+                  </div>
+                </div>
               </div>
+              
               <small className="text-muted d-block mt-2">
-                Select a professional avatar or leave blank for auto-generated initials
+                Professional cartoon-style avatars perfect for business profiles. Leave blank for auto-generated initials.
               </small>
             </div>
 
@@ -291,14 +397,6 @@ const SignUpPage = () => {
                     <strong>Account Created Successfully!</strong>
                     <div className="small">
                       You can now log in with your credentials.
-                      {savedImageUrl && (
-                        <>
-                          <br />
-                          <span className="text-muted">
-                            Your profile picture has been saved and will appear after login.
-                          </span>
-                        </>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -376,102 +474,184 @@ const SignUpPage = () => {
       <style jsx>{`
         .profile-image-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
           gap: 1rem;
           max-height: 400px;
           overflow-y: auto;
           padding: 1.5rem;
-          background: #f8f9fa;
-          border-radius: 12px;
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-radius: 16px;
           border: 2px solid #e9ecef;
+          box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .profile-image-option {
           position: relative;
           cursor: pointer;
-          border-radius: 12px;
-          transition: all 0.3s ease;
+          border-radius: 50%;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           border: 3px solid transparent;
           background: white;
-          padding: 8px;
+          padding: 6px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           text-align: center;
         }
 
         .profile-image-option:hover {
-          transform: scale(1.05);
+          transform: scale(1.08) translateY(-2px);
           border-color: #007bff;
-          box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+          box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
         }
 
         .profile-image-option.selected {
           border-color: #007bff;
-          transform: scale(1.08);
-          background: #e3f2fd;
+          transform: scale(1.12) translateY(-4px);
+          box-shadow: 0 12px 30px rgba(0, 123, 255, 0.4);
+          background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
         }
 
         .profile-image {
-          width: 70px;
-          height: 70px;
+          width: 80px;
+          height: 80px;
           border-radius: 50%;
           object-fit: cover;
           display: block;
-          margin: 0 auto 8px auto;
           background: white;
+          transition: all 0.3s ease;
         }
 
         .selection-indicator {
           position: absolute;
-          top: 5px;
-          right: 5px;
-          background: #007bff;
+          top: -8px;
+          right: -8px;
+          background: linear-gradient(45deg, #007bff, #0056b3);
           color: white;
           border-radius: 50%;
-          width: 24px;
-          height: 24px;
+          width: 28px;
+          height: 28px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
-          border: 2px solid white;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+          font-size: 14px;
+          border: 3px solid white;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          animation: checkmark 0.3s ease-in-out;
         }
 
         .avatar-label {
-          font-size: 11px;
+          margin-top: 8px;
+          opacity: 0;
+          transition: opacity 0.3s ease;
           color: #6c757d;
-          line-height: 1.2;
+          font-weight: 500;
+        }
+
+        .profile-image-option:hover .avatar-label {
+          opacity: 1;
+        }
+
+        .profile-image-option.selected .avatar-label {
+          opacity: 1;
+          color: #007bff;
+          font-weight: 600;
+        }
+
+        .random-option {
+          border: 3px dashed #6c757d !important;
+          background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+        }
+
+        .random-option:hover {
+          border-color: #007bff !important;
+          background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+        }
+
+        .random-avatar-placeholder {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+          transition: all 0.3s ease;
+        }
+
+        .random-option:hover .random-avatar-placeholder {
+          background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+
+        .avatar-filter {
+          padding: 1rem;
+          background: #f8f9fa;
+          border-radius: 12px;
+          border: 1px solid #e9ecef;
+        }
+
+        .avatar-filter .btn-sm {
+          border-radius: 20px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .avatar-filter .btn-outline-primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+        }
+
+        @keyframes checkmark {
+          0% {
+            transform: scale(0);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.2);
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
         }
 
         @media (max-width: 768px) {
           .profile-image-grid {
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 0.75rem;
             padding: 1rem;
           }
 
           .profile-image {
-            width: 55px;
-            height: 55px;
+            width: 65px;
+            height: 65px;
+          }
+
+          .random-avatar-placeholder {
+            width: 65px;
+            height: 65px;
+          }
+
+          .avatar-filter .btn-sm {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
           }
         }
 
-        /* Scrollbar styling */
-        .profile-image-grid::-webkit-scrollbar {
-          width: 8px;
-        }
+        @media (max-width: 576px) {
+          .avatar-filter .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
 
-        .profile-image-grid::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 4px;
-        }
-
-        .profile-image-grid::-webkit-scrollbar-thumb {
-          background: #c1c1c1;
-          border-radius: 4px;
-        }
-
-        .profile-image-grid::-webkit-scrollbar-thumb:hover {
-          background: #a8a8a8;
+          .avatar-filter .btn-sm {
+            width: 100%;
+            justify-content: center;
+          }
         }
       `}</style>
     </div>

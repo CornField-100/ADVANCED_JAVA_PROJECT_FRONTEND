@@ -1,5 +1,3 @@
-// Authentication and Authorization utilities
-
 // Decode JWT token to get user information
 export const decodeToken = (token) => {
   try {
@@ -60,7 +58,7 @@ export const getCurrentUser = () => {
       role: decoded.role || "user", // Default to 'user' if no role
       firstName: decoded.firstName,
       lastName: decoded.lastName,
-      imageUrl: decoded.imageUrl,
+      imageUrl: decoded.imageUrl || localStorage.getItem("userImageUrl"), // Fallback to localStorage
     };
 
     return user;

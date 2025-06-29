@@ -13,6 +13,7 @@ import {
   FaEdit,
   FaTrash,
   FaEye,
+  FaUserCircle,
 } from "react-icons/fa";
 
 const AdminDashboard = () => {
@@ -91,6 +92,73 @@ const AdminDashboard = () => {
 
   const currentUser = getCurrentUser();
 
+  // Debug: Log current user data to console
+  console.log("AdminDashboard - currentUser:", currentUser);
+  console.log("AdminDashboard - imageUrl:", currentUser?.imageUrl);
+
+  // IMMEDIATE FIX: Enhanced user display image with refresh capability
+  const getUserDisplayImage = () => {
+    if (currentUser?.imageUrl) {
+      console.log("Using imageUrl from current user token:", currentUser.imageUrl);
+      return currentUser.imageUrl;
+    }
+    
+    // Check if there's a cached imageUrl in localStorage
+    const cachedImageUrl = localStorage.getItem("userImageUrl");
+    if (cachedImageUrl) {
+      console.log("Using cached imageUrl from localStorage:", cachedImageUrl);
+      return cachedImageUrl;
+    }
+    
+    // If still no imageUrl, try to fetch fresh user data from the server
+    if (currentUser?.id && !currentUser?.imageUrl) {
+      console.log("Attempting to refresh user data from server");
+      refreshUserData();
+    }
+    
+    // If still no imageUrl, try the default professional avatars
+    if (currentUser?.firstName) {
+      // Use one of our professional avatars as fallback
+      const fallbackAvatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=professional1&backgroundColor=b6e3f4&clothingColor=262e33&eyebrowType=default&eyeType=default&facialHairType=blank&hairColor=724133&hatColor=ff488e&mouthType=smile&skinColor=ae5d29&topType=shortHairShortWaved";
+      console.log("Using fallback professional avatar");
+      return fallbackAvatar;
+    }
+    
+    return null;
+  };
+
+  // Function to refresh user data from server
+  const refreshUserData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !currentUser?.id) return;
+
+      const response = await fetch(`http://localhost:3001/api/users/profile`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        console.log("Refreshed user data:", userData);
+        
+        // If we got an imageUrl, cache it
+        if (userData.imageUrl) {
+          localStorage.setItem("userImageUrl", userData.imageUrl);
+          // Force a re-render by updating the page
+          window.location.reload();
+        }
+      } else {
+        console.log("Failed to refresh user data:", response.status);
+      }
+    } catch (error) {
+      console.error("Error refreshing user data:", error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="container py-5 text-center">
@@ -116,16 +184,75 @@ const AdminDashboard = () => {
           >
             <div className="card-body text-white p-4">
               <div className="d-flex align-items-center justify-content-between">
-                <div>
-                  <h1 className="h3 mb-1">Admin Dashboard</h1>
-                  <p className="mb-0 opacity-75">
-                    Welcome back, {currentUser?.firstName || "Admin"}! Manage
-                    your e-commerce platform.
-                  </p>
+                <div className="d-flex align-items-center">
+                  {/* Profile Image */}
+                  <div className="profile-section me-4">
+                    {getUserDisplayImage() ? (
+                      <img
+                        src={getUserDisplayImage()}
+                        alt={`${currentUser.firstName} ${currentUser.lastName}`}
+                        className="profile-image"
+                        onError={(e) => {
+                          console.log("Failed to load profile image, using placeholder");
+                          e.target.src = "https://via.placeholder.com/80x80/667eea/ffffff?text=" + 
+                            (currentUser?.firstName?.charAt(0) || "U") + 
+                            (currentUser?.lastName?.charAt(0) || "");
+                        }}
+                      />
+                    ) : (
+                      <div className="profile-placeholder">
+                        <FaUserCircle size={80} color="#ffffff" />
+                      </div>
+                    )}
+                    <div className="profile-status"></div>
+                  </div>
+                  
+                  {/* Welcome Text */}
+                  <div>
+                    <div className="d-flex align-items-center gap-2 mb-1">
+                      <h1 className="h3 mb-0">
+                        Welcome back, {currentUser?.firstName || "Admin"}!
+                      </h1>
+                      <button
+                        onClick={refreshUserData}
+                        className="btn btn-sm btn-outline-light"
+                        title="Refresh profile data"
+                        style={{ fontSize: "0.7rem", padding: "2px 8px" }}
+                      >
+                        🔄
+                      </button>
+                    </div>
+                    <p className="mb-2 opacity-75">
+                      Manage your e-commerce platform with ease
+                    </p>
+                    <div className="d-flex align-items-center gap-3">
+                      <span className="badge bg-white text-primary px-3 py-2 rounded-pill">
+                        🛡️ Administrator
+                      </span>
+                      <span className="text-white-50 small">
+                        Last login: {new Date().toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
                 </div>
+                
+                {/* Quick Actions */}
                 <div className="text-end">
-                  <div className="badge bg-white text-primary px-3 py-2 rounded-pill">
-                    🛡️ Administrator
+                  <div className="d-flex flex-column gap-2">
+                    <button
+                      onClick={() => navigate("/analytics")}
+                      className="btn btn-light btn-sm text-primary fw-semibold"
+                    >
+                      <FaChartLine className="me-1" />
+                      View Analytics
+                    </button>
+                    <button
+                      onClick={() => navigate("/admin/users")}
+                      className="btn btn-outline-light btn-sm"
+                    >
+                      <FaUsers className="me-1" />
+                      Manage Users
+                    </button>
                   </div>
                 </div>
               </div>
@@ -371,6 +498,74 @@ const AdminDashboard = () => {
           <UserStatsWidget />
         </div>
       </div>
+
+      {/* Profile Styles */}
+      <style jsx>{`
+        .profile-section {
+          position: relative;
+        }
+
+        .profile-image {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 4px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+          background: white;
+          padding: 2px;
+        }
+
+        .profile-placeholder {
+          width: 80px;
+          height: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-status {
+          position: absolute;
+          bottom: 5px;
+          right: 5px;
+          width: 20px;
+          height: 20px;
+          background: #28a745;
+          border: 3px solid white;
+          border-radius: 50%;
+        }
+
+        .card {
+          transition: all 0.3s ease;
+        }
+
+        .card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .btn {
+          transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+          .profile-image,
+          .profile-placeholder {
+            width: 60px;
+            height: 60px;
+          }
+          
+          .profile-status {
+            width: 15px;
+            height: 15px;
+            bottom: 2px;
+            right: 2px;
+          }
+        }
+      `}</style>
     </div>
   );
 };
