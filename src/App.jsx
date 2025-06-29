@@ -68,18 +68,6 @@ const LoadingSpinner = ({ message = "Loading..." }) => (
   </div>
 );
 
-const AdminLoadingSpinner = () => (
-  <LoadingSpinner message="Loading admin dashboard..." />
-);
-
-const ShoppingLoadingSpinner = () => (
-  <LoadingSpinner message="Loading shopping experience..." />
-);
-
-const ProductLoadingSpinner = () => (
-  <LoadingSpinner message="Loading product management..." />
-);
-
 const App = () => {
   return (
     <Router>
@@ -92,9 +80,7 @@ const App = () => {
           element={
             <div style={{ paddingTop: "5rem" }}>
               <ProtectedRoute adminOnly={true}>
-                <Suspense fallback={<AdminLoadingSpinner />}>
-                  <AnalyticsDashboard />
-                </Suspense>
+                <AnalyticsDashboard />
               </ProtectedRoute>
             </div>
           }
@@ -113,9 +99,7 @@ const App = () => {
           path="/products"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<LoadingSpinner />}>
-                <HomePage />
-              </Suspense>
+              <HomePage />
             </main>
           }
         />
@@ -123,9 +107,7 @@ const App = () => {
           path="/login"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<LoadingSpinner />}>
-                <LogInPage />
-              </Suspense>
+              <LogInPage />
             </main>
           }
         />
@@ -133,9 +115,7 @@ const App = () => {
           path="/signup"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<LoadingSpinner />}>
-                <SignUpPage />
-              </Suspense>
+              <SignUpPage />
             </main>
           }
         />
@@ -143,9 +123,7 @@ const App = () => {
           path="/search"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<ShoppingLoadingSpinner />}>
-                <SearchProductPage />
-              </Suspense>
+              <SearchProductPage />
             </main>
           }
         />
@@ -153,9 +131,7 @@ const App = () => {
           path="/cart"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<ShoppingLoadingSpinner />}>
-                <CartPage />
-              </Suspense>
+              <CartPage />
             </main>
           }
         />
@@ -163,9 +139,7 @@ const App = () => {
           path="/checkout"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<ShoppingLoadingSpinner />}>
-                <CheckoutPage />
-              </Suspense>
+              <CheckoutPage />
             </main>
           }
         />
@@ -173,9 +147,7 @@ const App = () => {
           path="/order-confirmation"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<ShoppingLoadingSpinner />}>
-                <OrderConfirmation />
-              </Suspense>
+              <OrderConfirmation />
             </main>
           }
         />
@@ -183,9 +155,7 @@ const App = () => {
           path="/products/:id"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<ShoppingLoadingSpinner />}>
-                <ProductDetail />
-              </Suspense>
+              <ProductDetail />
             </main>
           }
         />
@@ -193,9 +163,7 @@ const App = () => {
           path="/debug"
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
-              <Suspense fallback={<LoadingSpinner />}>
-                <DebugPage />
-              </Suspense>
+              <DebugPage />
             </main>
           }
         />
@@ -206,9 +174,7 @@ const App = () => {
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
               <ProtectedRoute adminOnly={true}>
-                <Suspense fallback={<ProductLoadingSpinner />}>
-                  <CreateProduct />
-                </Suspense>
+                <CreateProduct />
               </ProtectedRoute>
             </main>
           }
@@ -218,9 +184,7 @@ const App = () => {
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
               <ProtectedRoute adminOnly={true}>
-                <Suspense fallback={<ProductLoadingSpinner />}>
-                  <EditProductPage />
-                </Suspense>
+                <EditProductPage />
               </ProtectedRoute>
             </main>
           }
@@ -232,9 +196,7 @@ const App = () => {
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
               <ProtectedRoute adminOnly={true}>
-                <Suspense fallback={<AdminLoadingSpinner />}>
-                  <AdminDashboard />
-                </Suspense>
+                <AdminDashboard />
               </ProtectedRoute>
             </main>
           }
@@ -244,9 +206,7 @@ const App = () => {
           element={
             <main style={{ paddingTop: "5rem" }} className="container">
               <ProtectedRoute adminOnly={true}>
-                <Suspense fallback={<AdminLoadingSpinner />}>
-                  <AdminOrdersPage />
-                </Suspense>
+                <AdminOrdersPage />
               </ProtectedRoute>
             </main>
           }
@@ -256,9 +216,7 @@ const App = () => {
           element={
             <div style={{ paddingTop: "5rem" }}>
               <ProtectedRoute adminOnly={true}>
-                <Suspense fallback={<AdminLoadingSpinner />}>
-                  <AdminUsersPage />
-                </Suspense>
+                <AdminUsersPage />
               </ProtectedRoute>
             </div>
           }
@@ -267,9 +225,7 @@ const App = () => {
         <Route 
           path="*" 
           element={
-            <Suspense fallback={<LoadingSpinner />}>
-              <NotFoundPage />
-            </Suspense>
+            <NotFoundPage />
           } 
         />
       </Routes>

@@ -3,14 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { fetchProducts } from "../utils/fetchProduts";
 import CardComponent from "../components/CardComponent";
 import Hero from "../components/Hero"; // Import the Hero component
+import LoadingScreen from "../components/LoadingScreen"; // Import the LoadingScreen component
 import { isAdmin } from "../utils/auth";
 
 const LandingPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const navigate = useNavigate();
   const userIsAdmin = isAdmin();
 
+  // Load products regardless of loading screen state
   useEffect(() => {
     const loadProducts = async () => {
       try {
@@ -25,6 +28,15 @@ const LandingPage = () => {
     };
     loadProducts();
   }, []);
+
+  const handleLoadingComplete = () => {
+    setShowLoadingScreen(false);
+  };
+
+  // Show loading screen until it completes its animation
+  if (showLoadingScreen) {
+    return <LoadingScreen onComplete={handleLoadingComplete} />;
+  }
 
   const handleEdit = (productId) => {
     navigate(`/edit-product/${productId}`);
